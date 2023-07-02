@@ -1,0 +1,7 @@
+{
+  "name": "wow",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

@@ -1,0 +1,36 @@
+.inputsContainer {
+  padding: 20px;
+  padding-bottom: 4px;
+  padding-top: 8px;
+}
+
+.inputContainerSingle {
+  background-color: var(--ion-color-light);
+  padding-left: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.inputContainerSingle:last-child {
+  margin-bottom: 0;
+}
+
+.buttonList {
+  padding-top: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 17px;
+}
+
+.buttonList > * {
+  width: 47%;
+}
+
+.centerAbs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+

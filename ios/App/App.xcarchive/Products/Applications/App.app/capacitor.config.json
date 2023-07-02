@@ -1,0 +1,11 @@
+{
+	"appId": "in.r0h.wow",
+	"appName": "wow",
+	"bundledWebRuntime": false,
+	"webDir": "dist",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0
+		}
+	}
+}

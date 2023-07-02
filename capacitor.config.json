@@ -1,0 +1,18 @@
+{
+  "appId": "in.r0h.wow",
+  "appName": "wow",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    },
+    "Keyboard": {
+      "resize": "none"
+    }
+  },
+  "server": {
+    "url": "http://192.168.2.133:3000/",
+    "cleartext": true
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Awesome Capacitor App</title>
+  <meta name="viewport"
+    content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+  <script type="module"
+    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"></script>
+  <script nomodule
+    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.js"></script>
+
+  <link rel="icon" type="image/x-icon" href="./assets/icon/favicon.ico" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+  <ion-app>
+
+    <div id="app-loading" class="page">
+      <div class="centerAbs">
+        <ion-spinner></ion-spinner>
+      </div>
+    </div>
+
+    <div id="app-login" class="page hidden">
+      <ion-content fullscreen="true">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Wow</ion-card-title>
+          </ion-card-header>
+        
+          <ion-card-content>
+            Behold... the wow app. Send and recieve "wows" with your friends: Unlimited utility and fun! Just sign up.
+          </ion-card-content>
+
+          <div class="inputsContainer">
+            <div class="inputContainerSingle">
+              <ion-input id="emailInput" disabled="false" type="email" label="Email" placeholder="example@domain.net"></ion-input>
+            </div>
+            <div class="inputContainerSingle">
+              <ion-input id="passInput" disabled="false" type="password" label="Password" placeholder="***"></ion-input>
+            </div>
+          </div>
+
+          <div class="buttonList">
+            <ion-button id="signUpButton" onclick="logup()">Create Account</ion-button>
+            <ion-button id="signInButton" onclick="login()">Sign In</ion-button>
+          </div>
+        </ion-card>
+      </ion-content>
+      
+    </div>    
+
+    <div id="app-home" class="page hidden">
+      home home home
+    </div>
+  </ion-app>
+
+  <!-- JQUERY -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+  <script>
+    window.addEventListener('keyboardWillShow', (ev) => {
+      const kbh = ev.keyboardHeight;
+      $(`#app-login`).css("height", "calc(100% - " + kbh + "px) !important");
+      console.log($(`#ionicapptarget`).get(0))
+    });
+
+    window.addEventListener("keyboardWillHide", () => {
+      $(`#app-login`).get(0).setAttribute("style", "");
+    });
+  </script>
+
+  <script type="module" src="./js/authservice.js"></script>
+
+</body>
+</html>
