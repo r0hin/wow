@@ -1,9 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
+import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
 import { showAlert } from "./alerts";
 
 import { toastController } from "@ionic/core";
+import QRCode from "qrcode"
+import { Clipboard } from '@capacitor/clipboard';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyC2pUO_tPX2_r6yJjDzyhubx5Tok16L5eg",
@@ -123,10 +127,119 @@ window.getAuthDetail = (type) => {
       case "email":
         resolve(window.user.email);
         break;
+      case "uid":
+        resolve(window.user.uid);
+        break;
       default:
         break;
     }
   })
+}
+
+window.generateQRCode = async (canv, uid) => {
+  // Get screen width in px
+  const width = window.innerWidth;
+  console.log(canv, uid)
+  QRCode.toCanvas(canv, uid, {
+    width: width,
+    color: {
+      dark: '#5856d6',  // Blue dots
+      light: '#0000' // Transparent background
+    }
+  }, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+}
+
+window.beginScanning = async () => {
+  await BarcodeScanner.checkPermission({ force: true });
+  BarcodeScanner.hideBackground();
+  const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
+  if (result.hasContent) {
+    console.log(result.content); // log the raw scanned content
+    addFriend(result.content);
+  }
+}
+
+window.copyAuthCode = async () => {
+  const uid = await getAuthDetail("uid");
+  await Clipboard.write({
+    string: uid
+  });
+
+  const toast = await toastController.create({
+    message: 'Friend code copied to clipboard',
+    duration: 2500,
+    position: "bottom",
+    buttons: [{
+      text: "OK",
+      role: "cancel"
+    }]
+  });
+
+  await toast.present();
+}
+
+window.addFriend = async (uidInput) => {
+  let uid = uidInput;
+  if (!uid) {
+    const { type, value } = await Clipboard.read();
+    if (value) {
+      uid = value;
+    }
+  }
+
+  if (!uid || typeof uid !== "string" || uid.length < 1) {
+    showAlert("Invalid Friend Code", "", "The friend code you are trying to add is invalid");
+    return;
+  }
+
+  if (uid === window.user.uid) {
+    showAlert("Invalid Friend Code", "", "You cannot add yourself as a friend");
+    return;
+  }
+
+  // Check if user exists
+  const userDoc = await getDoc(doc(db, `users/${uid}`));
+  if (!userDoc.exists()) {
+    showAlert("User not found", "", "The user you are trying to add does not exist");
+    return;
+  }
+
+  // Check if user is already a friend
+  const data = userDoc.data();
+  if (data.friends && data.friends.length && data.friends.includes(window.user.uid)) {
+    showAlert("User already added", "", "The user you are trying to add is already your friend");
+    return;
+  }
+
+  // Add friend
+  try {
+    await setDoc(doc(db, `users/${uid}`), {
+      friends: arrayUnion(window.user.uid)
+    }, { merge: true })
+
+    await setDoc(doc(db, `users/${window.user.uid}`), {
+      friends: arrayUnion(uid)
+    }, { merge: true })
+
+    const toast = await toastController.create({
+      message: 'Friend successfully added',
+      duration: 2500,
+      position: "bottom",
+      buttons: [{
+        text: "OK",
+        role: "cancel"
+      }]
+    });
+
+    await toast.present();
+  }
+  catch (error) {
+    showAlert("Update Error", "", error.message);
+  }
 }
 
 $(`#signUpButton`).get(0).onclick = async () => {

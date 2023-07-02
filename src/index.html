@@ -74,14 +74,28 @@
                 this.innerHTML = `
                   <ion-modal trigger="open-modal" initial-breakpoint="0.5">
                     <ion-content>
-                      <br><br>
-                      Scan here
+                      <canvas style="width: 100% !important" id="qrCanvas"></canvas>
+                      <div style="padding-left: 16px; padding-right: 16px;">
+                        Have your friend scan this code from within the app to add them. Alternatively:<br>
+                        <center>
+                          <ion-button id="copyFriendCode" fill="clear">Copy Friend Code</ion-button>
+                          <ion-button id="pasteFriendCode" fill="clear">Paste Friend Code</ion-button>
+                        </center>
+                      </div>
+                    </ion-content>
+                  </ion-modal>
+                  <ion-modal trigger="scan-modal" initial-breakpoint="0.5">
+                    <ion-content>
+                      Scanning
                     </ion-content>
                   </ion-modal>
                   <ion-header translucent="true">
                     <ion-toolbar>
                       <ion-title>Friends</ion-title>
                       <ion-buttons slot="end">
+                        <ion-button id="scan-modal">
+                          <ion-icon slot="icon-only" name="scan"></ion-icon>
+                        </ion-button>
                         <ion-button id="open-modal">
                           <ion-icon slot="icon-only" name="add-circle"></ion-icon>
                         </ion-button>
@@ -102,6 +116,22 @@
 
                 var modal = document.querySelector('ion-modal');
                 modal.breakpoints = [0, 0.5, 0.75];
+
+                $(`#open-modal`).click(async () => {
+                  generateQRCode($("#qrCanvas")[0], await getAuthDetail("uid"));
+                });
+
+                $(`#scan-modal`).click(() => {
+                  beginScanning()
+                });
+
+                $(`#copyFriendCode`).click(() => {
+                  copyAuthCode();
+                });
+
+                $(`#pasteFriendCode`).click(() => {
+                  addFriend();
+                });
               }
             }
 
