@@ -63,25 +63,51 @@
       
     </div>    
 
-    <div id="app-home" class="hidden">
+    <div id="app-home" class="hidden ion-page">
       <ion-tabs>
         <ion-tab tab="friends">
-          <ion-nav id="home-nav"></ion-nav>
-          <div id="home-page">
-            <ion-header translucent="true">
-              <ion-toolbar>
-                <ion-title>Friends</ion-title>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content>
-              <ion-header collapse="condense">
-                <ion-toolbar>
-                  <ion-title size="large">Friends</ion-title>
-                </ion-toolbar>
-              </ion-header>
-              <div class="example-content">Friends content</div>
-            </ion-content>
-          </div>
+          <ion-nav id="home-nav" root="home-main"></ion-nav>
+
+          <script>
+            class homeMain extends HTMLElement {
+              connectedCallback() {
+                this.innerHTML = `
+                  <ion-modal trigger="open-modal" initial-breakpoint="0.5">
+                    <ion-content>
+                      <br><br>
+                      Scan here
+                    </ion-content>
+                  </ion-modal>
+                  <ion-header translucent="true">
+                    <ion-toolbar>
+                      <ion-title>Friends</ion-title>
+                      <ion-buttons slot="end">
+                        <ion-button id="open-modal">
+                          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+                  </ion-header>
+                  <ion-content fullscreen="true">
+                    <ion-card>
+                      <ion-card-header>
+                        <ion-card-subtitle>New Friend</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        Add a friend by tapping the <ion-icon name="add-circle"></ion-icon> button above.
+                      </ion-card-content>
+                    </ion-card>
+                  </ion-content>
+                `;
+
+                var modal = document.querySelector('ion-modal');
+                modal.breakpoints = [0, 0.5, 0.75];
+              }
+            }
+
+            customElements.define('home-main', homeMain);
+          </script>
+
         </ion-tab>
         <ion-tab tab="settings">
           <ion-nav root="settings-main"></ion-nav>
@@ -116,7 +142,7 @@
             }
 
             class settingsAccount extends HTMLElement {
-              connectedCallback() {
+              async connectedCallback() {
                 this.innerHTML = `
                   <ion-header translucent="true">
                     <ion-toolbar>
@@ -129,9 +155,41 @@
                     </ion-toolbar>
                   </ion-header>
                   <ion-content fullscreen="true">
-                    Profile options here
+                    <br>
+                    <ion-list lines="inset">
+                      <ion-item button id="profileEditDisplay">
+                        <ion-label>Display</ion-label>
+                        <ion-note id="profileName" slot="end">...</ion-note>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label>Email</ion-label>
+                        <ion-note id="profileEmail" slot="end">...</ion-note>
+                      </ion-item>
+                    </ion-list>
+                  
+                    <br>
+
+                    <ion-list lines="inset">
+                      <ion-item button id="profileSignOut">
+                        <ion-label color="danger">Sign Out</ion-label>
+                      </ion-item>
+                    </ion-list>
                   </ion-content>
                 `;
+
+                window.refreshProfile = async () => {
+                  $(`#profileName`).text(await getAuthDetail("name"));
+                  $(`#profileEmail`).text(await getAuthDetail("email"));
+                }
+
+                $(`#profileName`).text(await getAuthDetail("name"));
+                $(`#profileEmail`).text(await getAuthDetail("email"));
+                $(`#profileSignOut`).click(() => {
+                  signOut();
+                });
+                $(`#profileEditDisplay`).click(() => {
+                  editDisplayName();
+                })
               }
             }
 
@@ -169,32 +227,8 @@
   <!-- JQUERY -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
-  <script>
-    // Use matchMedia to check the user preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-
-    toggleDarkTheme(prefersDark.matches);
-
-    // Listen for changes to the prefers-color-scheme media query
-    prefersDark.addEventListener('change', (mediaQuery) => toggleDarkTheme(mediaQuery.matches));
-
-    // Add or remove the "dark" class based on if the media query matches
-    function toggleDarkTheme(shouldAdd) {
-      document.body.classList.toggle('dark', shouldAdd);
-    }
-
-    window.addEventListener('keyboardWillShow', (ev) => {
-      const kbh = ev.keyboardHeight;
-      $(`#app-login`).css("height", "calc(100% - " + kbh + "px) !important");
-      console.log($(`#ionicapptarget`).get(0))
-    });
-
-    window.addEventListener("keyboardWillHide", () => {
-      $(`#app-login`).get(0).setAttribute("style", "");
-    });
-  </script>
-
   <script type="module" src="./js/authservice.js"></script>
+  <script type="module" src="./js/app.js"></script>
 
 </body>
 </html>
