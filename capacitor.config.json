@@ -1,6 +1,6 @@
 {
   "appId": "in.r0h.wow",
-  "appName": "wow",
+  "appName": "Wow!",
   "bundledWebRuntime": false,
   "webDir": "dist",
   "plugins": {
@@ -9,6 +9,9 @@
     },
     "Keyboard": {
       "resize": "none"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false
     }
   },
   "servera": {

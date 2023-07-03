@@ -31,6 +31,16 @@
     "@zxing/browser" "^0.1.3"
     "@zxing/library" "^0.20.0"
 
+"@capacitor-firebase/app@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor-firebase/app/-/app-5.0.1.tgz#fb68eeb8c0dee33971d207d394710ec2f733b928"
+  integrity sha512-cWp4C9+QrH6CrIkFCltne3LLTkF58ZjYrx6z4JDAsFl3hgZxlrmNGmXZDNeMpD4f6mRflOctrVIv/csFxnygYw==
+
+"@capacitor-firebase/authentication@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor-firebase/authentication/-/authentication-5.0.1.tgz#72df08cc93b9fad40f0ad5a717f1d621cdbbd6e3"
+  integrity sha512-fef6W6M2yz5xPW+Zp9HTF+6u3xVWCM30dqo/F6OGvi9/vxQhZ+lLoS7xnNyOhgI68+YWRjV1PU03RYhqygPGuA==
+
 "@capacitor/app@^5.0.5":
   version "5.0.5"
   resolved "https://registry.npmjs.org/@capacitor/app/-/app-5.0.5.tgz"

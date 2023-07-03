@@ -8,6 +8,16 @@ PODS:
   - CapacitorCommunityBarcodeScanner (4.0.1):
     - Capacitor
   - CapacitorCordova (5.1.0)
+  - CapacitorFirebaseApp (5.0.1):
+    - Capacitor
+    - FirebaseCore (= 10.8.0)
+  - CapacitorFirebaseAuthentication (5.0.1):
+    - Capacitor
+    - CapacitorFirebaseAuthentication/Lite (= 5.0.1)
+    - FirebaseAuth (= 10.8.0)
+  - CapacitorFirebaseAuthentication/Lite (5.0.1):
+    - Capacitor
+    - FirebaseAuth (= 10.8.0)
   - CapacitorHaptics (5.0.5):
     - Capacitor
   - CapacitorKeyboard (5.0.5):
@@ -16,6 +26,36 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (5.0.5):
     - Capacitor
+  - FirebaseAppCheckInterop (10.11.0)
+  - FirebaseAuth (10.8.0):
+    - FirebaseAppCheckInterop (~> 10.0)
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GTMSessionFetcher/Core (< 4.0, >= 2.1)
+  - FirebaseCore (10.8.0):
+    - FirebaseCoreInternal (~> 10.0)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/Logger (~> 7.8)
+  - FirebaseCoreInternal (10.11.0):
+    - "GoogleUtilities/NSData+zlib (~> 7.8)"
+  - GoogleUtilities/AppDelegateSwizzler (7.11.1):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (7.11.1):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.11.1):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/Network (7.11.1):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (7.11.1)"
+  - GoogleUtilities/Reachability (7.11.1):
+    - GoogleUtilities/Logger
+  - GTMSessionFetcher/Core (3.1.1)
+  - PromisesObjC (2.2.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -23,10 +63,22 @@ DEPENDENCIES:
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorFirebaseApp (from `../../node_modules/@capacitor-firebase/app`)"
+  - "CapacitorFirebaseAuthentication (from `../../node_modules/@capacitor-firebase/authentication`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+
+SPEC REPOS:
+  trunk:
+    - FirebaseAppCheckInterop
+    - FirebaseAuth
+    - FirebaseCore
+    - FirebaseCoreInternal
+    - GoogleUtilities
+    - GTMSessionFetcher
+    - PromisesObjC
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -39,6 +91,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/barcode-scanner"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorFirebaseApp:
+    :path: "../../node_modules/@capacitor-firebase/app"
+  CapacitorFirebaseAuthentication:
+    :path: "../../node_modules/@capacitor-firebase/authentication"
   CapacitorHaptics:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
@@ -54,11 +110,20 @@ SPEC CHECKSUMS:
   CapacitorClipboard: 17f9418206e9de5673fac29c815f11c8d618e81c
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
   CapacitorCordova: 5984fa700842461518ecd320905c7f19ecdd590b
+  CapacitorFirebaseApp: 4d0762b7c463f2044fb7321a5e44e2e66a73c543
+  CapacitorFirebaseAuthentication: 3529176c8388558a045c76c87c8706a76746939f
   CapacitorHaptics: 4b1a7e1bac1794d1515842d304f9fce46ef5084c
   CapacitorKeyboard: ba4d618d80bf8caef4b9d8a971d714b9ca795e28
   CapacitorSplashScreen: e563abf6d590bfe0269515ccc9d8bc03c41f32e9
   CapacitorStatusBar: 540867ac3c63875b65bebd888f695de50a13a9a2
+  FirebaseAppCheckInterop: 255b6c0292fe5da995c8b2df0c02f6a3ca7f61b4
+  FirebaseAuth: 28e6fff787467cd15ab51c8c7aa904003b2f57aa
+  FirebaseCore: e78636a990b54be427ce300aa09a0e359f4e0e87
+  FirebaseCoreInternal: 9e46c82a14a3b3a25be4e1e151ce6d21536b89c0
+  GoogleUtilities: 9aa0ad5a7bc171f8bae016300bfcfa3fb8425749
+  GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
+  PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
 
-PODFILE CHECKSUM: 58003a2d88c18035c77dc4c9325f8f42cd50f081
+PODFILE CHECKSUM: 324c87a3073c4cdcbe680aa9ee456e4e6f0f8502
 
 COCOAPODS: 1.12.1

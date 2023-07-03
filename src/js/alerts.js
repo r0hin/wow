@@ -1,3 +1,5 @@
+import { toastController } from "@ionic/core";
+
 export async function showAlert(title, header, body) {
   const alert = document.createElement('ion-alert');
   alert.header = title;

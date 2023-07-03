@@ -1,12 +1,13 @@
-import { initializeApp } from "firebase/app";
+import { getApp, initializeApp } from "firebase/app";
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence } from "@firebase/auth";
 import { showAlert, showToasty } from "./alerts";
 
-import { toastController } from "@ionic/core";
 import QRCode from "qrcode"
 import { Clipboard } from '@capacitor/clipboard';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { Capacitor } from "@capacitor/core";
 
 window.scanning = false;
 
@@ -19,12 +20,24 @@ const firebaseConfig = {
   appId: "1:707217834321:web:d9588ce5b9accf8b7c9370"
 };
 
+const getFirebaseAuth = (app) => {
+  if (Capacitor.isNativePlatform()) {
+    return initializeAuth(getApp(), {
+      persistence: indexedDBLocalPersistence,
+    })
+  }
+  else {
+    return getAuth(app);
+  }
+}
+
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = getFirebaseAuth(app);
 export const db = getFirestore(app);
 window.user = null;
 
-onAuthStateChanged(auth, (user) => {
+FirebaseAuthentication.addListener("authStateChange", (data) => {
+  const user = data.user;
   window.user = user;
   if (user) {
     $(`#app-loading`).addClass("hidden");
@@ -39,7 +52,8 @@ onAuthStateChanged(auth, (user) => {
 })
 
 window.prepareFriends = (list, card) => {
-  const onauthstatehandler = onAuthStateChanged(auth, async (user) => {
+  FirebaseAuthentication.addListener("authStateChange", (data) => {
+    const user = data.user;
     if (user) {
       loadFriends(list, card);
     }
@@ -247,7 +261,11 @@ $(`#signUpButton`).get(0).onclick = async () => {
   const password = $(`#passInput`).val()
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password)
+    const result = await FirebaseAuthentication.createUserWithEmailAndPassword({
+      email: email,
+      password: password,
+    });
+    showToasty("Account successfully created");
   } catch (error) {
     showAlert("Authentication Error", "", error.message);
   }
@@ -258,7 +276,12 @@ $(`#signInButton`).get(0).onclick = async () => {
   const password = $(`#passInput`).val()
 
   try {
-    await signInWithEmailAndPassword(auth, email, password)
+    await FirebaseAuthentication.signInWithEmailAndPassword({
+      email: email,
+      password: password,
+    })
+
+    showToasty("Signed in successfully");
   }
   catch (error) {
     showAlert("Authentication Error", "", error.message);
