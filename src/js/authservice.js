@@ -1,7 +1,7 @@
 import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
-import { getAuth, initializeAuth, indexedDBLocalPersistence } from "@firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential } from "@firebase/auth";
 import { showAlert, showToasty } from "./alerts";
 
 import QRCode from "qrcode"
@@ -265,6 +265,11 @@ $(`#signUpButton`).get(0).onclick = async () => {
       email: email,
       password: password,
     });
+
+    const credential = result.credential // Null due to lib bug.
+
+    await signInWithCredential(auth, credential)
+
     showToasty("Account successfully created");
   } catch (error) {
     showAlert("Authentication Error", "", error.message);
@@ -276,10 +281,14 @@ $(`#signInButton`).get(0).onclick = async () => {
   const password = $(`#passInput`).val()
 
   try {
-    await FirebaseAuthentication.signInWithEmailAndPassword({
+    const result = await FirebaseAuthentication.signInWithEmailAndPassword({
       email: email,
       password: password,
     })
+
+    const credential = result.credential // Null due to lib bug.
+
+    await signInWithCredential(auth, result.credential)
 
     showToasty("Signed in successfully");
   }

@@ -1,9 +1,9 @@
 // Use matchMedia to check the user preference
 import { StatusBar, Style } from '@capacitor/status-bar';
 
+import { db } from "./authservice"
 import { addDoc, arrayRemove, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
 
-import { db } from "./authservice"
 import { showToasty } from './alerts';
 console.log(db)
 
@@ -100,7 +100,7 @@ window.loadFriends = async (list, card) => {
               #messages {
                 --sentColor: #0b93f6;
                 --receiveColor: var(--ion-color-step-100);
-                --bg: #F2F2F7;
+                --bg: var(--ion-background-color);
               
                 display: flex;
                 flex-direction: column;
@@ -109,12 +109,6 @@ window.loadFriends = async (list, card) => {
                 padding: 0;
                 padding-top: 12px;
                 list-style: none;
-              }
-
-              @media (prefers-color-scheme: dark) {
-                .list {
-                  --bg: #121212;
-                }
               }
 
               .shared {

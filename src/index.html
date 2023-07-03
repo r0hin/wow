@@ -140,6 +140,7 @@
                 
                 $(`#closeQrModalButton`).click(() => {
                   qrModal.dismiss();
+                  prepareFriends($(`#friendList`).get(0), $(`#newFriendCard`));
                 });
                 
                 $(`#open-modal`).click(async () => {
