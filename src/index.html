@@ -8,16 +8,16 @@
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
   <meta name="color-scheme" content="light dark" />
-
+  
   <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
-
+  
   <script type="module"
-    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"></script>
+  src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"></script>
   <script nomodule
-    src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.js"></script>
-
+  src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.js"></script>
+  
   <link rel="icon" type="image/x-icon" href="./assets/icon/favicon.ico" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="stylesheet" href="./css/style.css" />
@@ -27,24 +27,24 @@
 
 <body>
   <ion-app>
-
+    
     <div id="app-loading" class="page">
       <div class="centerAbs">
         <ion-spinner></ion-spinner>
       </div>
     </div>
-
+    
     <div id="app-login" class="page hidden">
       <ion-content fullscreen="true">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>Wow</ion-card-title>
+            <ion-card-title>Wow 2</ion-card-title>
           </ion-card-header>
-        
+          
           <ion-card-content>
             Behold... the wow app. Send and recieve "wows" with your friends: Unlimited utility and fun! Just sign up.
           </ion-card-content>
-
+          
           <div class="inputsContainer">
             <div class="inputContainerSingle">
               <ion-input id="emailInput" disabled="false" type="email" label="Email" placeholder="example@domain.net"></ion-input>
@@ -53,7 +53,7 @@
               <ion-input id="passInput" disabled="false" type="password" label="Password" placeholder="***"></ion-input>
             </div>
           </div>
-
+          
           <div class="buttonList">
             <ion-button id="signUpButton" onclick="logup()">Create Account</ion-button>
             <ion-button id="signInButton" onclick="login()">Sign In</ion-button>
@@ -62,17 +62,29 @@
       </ion-content>
       
     </div>    
-
+    
     <div id="app-home" class="hidden ion-page">
-      <ion-tabs>
-        <ion-tab tab="friends">
+      <ion-tabs id="ion-tabs-root">
+        <ion-tab tab="friends" id="friendsNavRoot">
           <ion-nav id="home-nav" root="home-main"></ion-nav>
-
           <script>
             class homeMain extends HTMLElement {
               connectedCallback() {
                 this.innerHTML = `
-                  <ion-modal trigger="open-modal" initial-breakpoint="0.5">
+                  <style>
+                    .hidden {
+                      display: none !important;
+                    }  
+                  </style>
+                  <ion-modal id="qrModal" trigger="open-modal">
+                    <ion-header>
+                      <ion-toolbar>
+                        <ion-title>Add Friend</ion-title>
+                        <ion-buttons slot="end">
+                          <ion-button id="closeQrModalButton">Close</ion-button>
+                        </ion-buttons>
+                      </ion-toolbar>
+                    </ion-header>
                     <ion-content>
                       <canvas style="width: 100% !important" id="qrCanvas"></canvas>
                       <div style="padding-left: 16px; padding-right: 16px;">
@@ -82,11 +94,6 @@
                           <ion-button id="pasteFriendCode" fill="clear">Paste Friend Code</ion-button>
                         </center>
                       </div>
-                    </ion-content>
-                  </ion-modal>
-                  <ion-modal trigger="scan-modal" initial-breakpoint="0.5">
-                    <ion-content>
-                      Scanning
                     </ion-content>
                   </ion-modal>
                   <ion-header translucent="true">
@@ -103,115 +110,136 @@
                     </ion-toolbar>
                   </ion-header>
                   <ion-content fullscreen="true">
-                    <ion-card>
+                    <ion-card id="newFriendCard" class="hidden">
                       <ion-card-header>
                         <ion-card-subtitle>New Friend</ion-card-subtitle>
                       </ion-card-header>
                       <ion-card-content>
-                        Add a friend by tapping the <ion-icon name="add-circle"></ion-icon> button above.
+                        Add a friend by sharing your code using <ion-icon name="add-circle"></ion-icon>. To add a friend with their code, use <ion-icon name="scan"></ion-icon>.
                       </ion-card-content>
                     </ion-card>
+                    <ion-card id="scanInfoBox" class="hidden">
+                      <ion-card-header>
+                        <ion-card-subtitle>Scanning</ion-card-subtitle>
+                      </ion-card-header>
+                      <ion-card-content>
+                        To cancel scanning, select <ion-icon name="scan"></ion-icon> again.
+                      </ion-card-content>
+                    </ion-card>
+                    <ion-list id="friendList" inset="true"></ion-list>
                   </ion-content>
                 `;
+                
+                prepareFriends($(`#friendList`).get(0), $(`#newFriendCard`));
 
-                var modal = document.querySelector('ion-modal');
-                modal.breakpoints = [0, 0.5, 0.75];
-
+                const qrModal = document.querySelector('#qrModal');
+                qrModal.isOpen = false;
+                
+                qrModal.addEventListener('ionModalDidDismiss', () => {
+                  // // alert('hi')
+                  qrModal.isOpen = false;
+                });
+                
+                $(`#closeQrModalButton`).click(() => {
+                  qrModal.dismiss();
+                });
+                
                 $(`#open-modal`).click(async () => {
                   generateQRCode($("#qrCanvas")[0], await getAuthDetail("uid"));
                 });
-
+                
                 $(`#scan-modal`).click(() => {
-                  beginScanning()
+                  $(`#scanInfoBox`).toggleClass(`hidden`);
+                  beginScanning();
                 });
-
+                
                 $(`#copyFriendCode`).click(() => {
                   copyAuthCode();
                 });
-
+                
                 $(`#pasteFriendCode`).click(() => {
                   addFriend();
                 });
               }
             }
-
+            
             customElements.define('home-main', homeMain);
           </script>
-
+          
         </ion-tab>
         <ion-tab tab="settings">
-          <ion-nav root="settings-main"></ion-nav>
+          <ion-nav id="settings-nav" root="settings-main"></ion-nav>
           <script>
             class settingsMain extends HTMLElement {
               connectedCallback() {
                 this.innerHTML = `
-                  <ion-header translucent="true">
+                <ion-header translucent="true">
+                  <ion-toolbar>
+                    <ion-title>Settings</ion-title>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content fullscreen="true">
+                  <ion-header collapse="condense">
                     <ion-toolbar>
-                      <ion-title>Settings</ion-title>
+                      <ion-title size="large">Settings</ion-title>
                     </ion-toolbar>
                   </ion-header>
-                  <ion-content fullscreen="true">
-                    <ion-header collapse="condense">
-                      <ion-toolbar>
-                        <ion-title size="large">Settings</ion-title>
-                      </ion-toolbar>
-                    </ion-header>
-                    <ion-list inset="true">
-                      <ion-nav-link component="settings-account">
-                        <ion-item button>
-                          <ion-label>Profile & Account</ion-label>
-                        </ion-item>
-                      </ion-nav-link>
-                      <ion-item>
-                        <ion-label>More</ion-label>
+                  <ion-list inset="true">
+                    <ion-nav-link component="settings-account">
+                      <ion-item button>
+                        <ion-label>Profile & Account</ion-label>
                       </ion-item>
-                    </ion-list>
-                  </ion-content>
+                    </ion-nav-link>
+                    <ion-item>
+                      <ion-label>More</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
                 `;
               }
             }
-
+            
             class settingsAccount extends HTMLElement {
               async connectedCallback() {
                 this.innerHTML = `
-                  <ion-header translucent="true">
-                    <ion-toolbar>
-                      <ion-buttons slot="start">
-                        <ion-nav-link component="settings-main" routerDirection="back">
-                          <ion-back-button text="Settings"></ion-back-button>
-                        </ion-nav-link>
-                      </ion-buttons>
-                      <ion-title>Profile</ion-title>
-                    </ion-toolbar>
-                  </ion-header>
-                  <ion-content fullscreen="true">
-                    <br>
-                    <ion-list lines="inset">
-                      <ion-item button id="profileEditDisplay">
-                        <ion-label>Display</ion-label>
-                        <ion-note id="profileName" slot="end">...</ion-note>
-                      </ion-item>
-                      <ion-item>
-                        <ion-label>Email</ion-label>
-                        <ion-note id="profileEmail" slot="end">...</ion-note>
-                      </ion-item>
-                    </ion-list>
+                <ion-header translucent="true">
+                  <ion-toolbar>
+                    <ion-buttons slot="start">
+                      <ion-nav-link component="settings-main" routerDirection="back">
+                        <ion-back-button text="Settings"></ion-back-button>
+                      </ion-nav-link>
+                    </ion-buttons>
+                    <ion-title>Profile</ion-title>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content fullscreen="true">
+                  <br>
+                  <ion-list lines="inset">
+                    <ion-item button id="profileEditDisplay">
+                      <ion-label>Display</ion-label>
+                      <ion-note id="profileName" slot="end">...</ion-note>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Email</ion-label>
+                      <ion-note id="profileEmail" slot="end">...</ion-note>
+                    </ion-item>
+                  </ion-list>
                   
-                    <br>
-
-                    <ion-list lines="inset">
-                      <ion-item button id="profileSignOut">
-                        <ion-label color="danger">Sign Out</ion-label>
-                      </ion-item>
-                    </ion-list>
-                  </ion-content>
+                  <br>
+                  
+                  <ion-list lines="inset">
+                    <ion-item button id="profileSignOut">
+                      <ion-label color="danger">Sign Out</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
                 `;
-
+                
                 window.refreshProfile = async () => {
                   $(`#profileName`).text(await getAuthDetail("name"));
                   $(`#profileEmail`).text(await getAuthDetail("email"));
                 }
-
+                
                 $(`#profileName`).text(await getAuthDetail("name"));
                 $(`#profileEmail`).text(await getAuthDetail("email"));
                 $(`#profileSignOut`).click(() => {
@@ -222,11 +250,11 @@
                 })
               }
             }
-
+            
             customElements.define('settings-main', settingsMain);
             customElements.define('settings-account', settingsAccount);
           </script>
-
+          
           <!-- <settings-account>
             <ion-content fullscreen="true">
               <ion-list inset="true">
@@ -241,11 +269,11 @@
           </settings-account> -->
         </ion-tab>
         <ion-tab-bar slot="bottom">
-          <ion-tab-button tab="friends">
+          <ion-tab-button id="friendstabbutton" tab="friends">
             <ion-icon name="people"></ion-icon>
             Friends
           </ion-tab-button>
-          <ion-tab-button tab="settings">
+          <ion-tab-button id="settingstabutton" tab="settings">
             <ion-icon name="cog"></ion-icon>
             Settings
           </ion-tab-button>
@@ -253,12 +281,12 @@
       </ion-tabs>
     </div>
   </ion-app>
-
+  
   <!-- JQUERY -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-
+  
   <script type="module" src="./js/authservice.js"></script>
   <script type="module" src="./js/app.js"></script>
-
+  
 </body>
 </html>

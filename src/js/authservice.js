@@ -8,6 +8,7 @@ import QRCode from "qrcode"
 import { Clipboard } from '@capacitor/clipboard';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 
+window.scanning = false;
 
 const firebaseConfig = {
   apiKey: "AIzaSyC2pUO_tPX2_r6yJjDzyhubx5Tok16L5eg",
@@ -18,9 +19,9 @@ const firebaseConfig = {
   appId: "1:707217834321:web:d9588ce5b9accf8b7c9370"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 window.user = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -29,11 +30,6 @@ onAuthStateChanged(auth, (user) => {
     $(`#app-loading`).addClass("hidden");
     $(`#app-login`).addClass("hidden");
     $(`#app-home`).removeClass("hidden");
-
-    // $(`#profileEmail`).text(user.email);
-
-    // const profileName = user.email.split("@")[0];
-    // $(`#profileName`).text(profileName);
   }
   else {
     $(`#app-loading`).addClass("hidden");
@@ -41,6 +37,15 @@ onAuthStateChanged(auth, (user) => {
     $(`#app-home`).addClass("hidden");
   }
 })
+
+window.prepareFriends = (list, card) => {
+  const onauthstatehandler = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      onauthstatehandler();
+      loadFriends(list, card);
+    }
+  });
+}
 
 window.signOut = async () => {
   try {
@@ -154,14 +159,32 @@ window.generateQRCode = async (canv, uid) => {
 }
 
 window.beginScanning = async () => {
+  if (window.scanning) {
+    stopScanning();
+    return;
+  }
+  else {
+    window.scanning = true;
+  }
+
+  document.querySelector('body').classList.add('scanner-active');
+
   await BarcodeScanner.checkPermission({ force: true });
   BarcodeScanner.hideBackground();
   const result = await BarcodeScanner.startScan(); // start scanning and wait for a result
   if (result.hasContent) {
+    stopScanning();
     console.log(result.content); // log the raw scanned content
     addFriend(result.content);
   }
 }
+
+function stopScanning() {
+  BarcodeScanner.showBackground();
+  BarcodeScanner.stopScan();
+  document.querySelector('body').classList.remove('scanner-active');
+  window.scanning = false;
+};
 
 window.copyAuthCode = async () => {
   const uid = await getAuthDetail("uid");

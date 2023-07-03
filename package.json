@@ -11,7 +11,9 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "ios": "npx cap sync && npx cap copy && npx cap open ios"
+    "ios": "npx cap sync && npx cap copy",
+    "ionic:build": "vite build",
+    "ionic:serve": "vite"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
@@ -30,7 +32,8 @@
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
-    "vite": "^2.9.13"
+    "vite": "^2.9.13",
+    "vite-plugin-mkcert": "^1.16.0"
   },
   "author": "",
   "license": "ISC"
