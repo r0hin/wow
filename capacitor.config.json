@@ -11,7 +11,7 @@
       "resize": "none"
     }
   },
-  "server": {
+  "servera": {
     "url": "https://192.168.2.133:3000/",
     "cleartext": true
   }
