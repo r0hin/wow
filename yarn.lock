@@ -54,11 +54,6 @@
     tslib "^2.0.3"
     yargs "^17.3.1"
 
-"@capacitor/camera@latest":
-  version "5.0.5"
-  resolved "https://registry.npmjs.org/@capacitor/camera/-/camera-5.0.5.tgz"
-  integrity sha512-faaV0ptt1iXPw+qU3ZhppZXiBqIGNewrB4feMyMt1z055D5cV6DXRJUBF2PuR+vmRWRWoJZhI84lAzORE3FGcg==
-
 "@capacitor/cli@^3.2.5":
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-3.9.0.tgz#302c65d89fd5ee23b1b87f9b8462134f48027a71"

@@ -54,5 +54,7 @@
 	<true/>
   <key>NSCameraUsageDescription</key>
   <string>To be able to scan barcodes to add friends</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

@@ -15,7 +15,6 @@
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor/app": "^5.0.5",
     "@capacitor/assets": "^2.0.4",
-    "@capacitor/camera": "latest",
     "@capacitor/clipboard": "^5.0.5",
     "@capacitor/core": "latest",
     "@capacitor/haptics": "^5.0.5",
