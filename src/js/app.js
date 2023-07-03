@@ -35,10 +35,22 @@ window.addEventListener("keyboardWillHide", () => {
   $(`#app-login`).get(0).setAttribute("style", "");
 });
 
+
 window.friendsCache = [];
+window.lastPaintUID = null;
+window.friendsSnapshotListener = null;
 
 window.loadFriends = async (list, card) => {
-  onSnapshot(doc(db, `users/${await getAuthDetail("uid")}`), (selfDoc) => {
+  try { friendsSnapshotListener() } catch (error) {}
+  friendsSnapshotListener = onSnapshot(doc(db, `users/${await getAuthDetail("uid")}`), async (selfDoc) => {
+
+    if (lastPaintUID !== selfDoc.id) {
+      $(list).empty();
+      $(`#home-nav`).get(0).popToRoot();
+    }
+
+    lastPaintUID = selfDoc.id;
+
     if (!selfDoc.exists()) {
       card.removeClass("hidden");
       return;

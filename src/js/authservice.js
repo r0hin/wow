@@ -41,7 +41,6 @@ onAuthStateChanged(auth, (user) => {
 window.prepareFriends = (list, card) => {
   const onauthstatehandler = onAuthStateChanged(auth, async (user) => {
     if (user) {
-      onauthstatehandler();
       loadFriends(list, card);
     }
   });
