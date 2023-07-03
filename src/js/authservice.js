@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
-import { showAlert } from "./alerts";
+import { showAlert, showToasty } from "./alerts";
 
 import { toastController } from "@ionic/core";
 import QRCode from "qrcode"
@@ -86,15 +86,7 @@ window.editDisplayName = async () => {
         }, { merge: true })
 
         
-        const toast = await toastController.create({
-          message: 'Display name successfully updated',
-          duration: 2500,
-          position: "bottom",
-          buttons: [{
-            text: "OK",
-            role: "cancel"
-          }]
-        });
+        showToasty("Display name successfully updated");
         
         refreshProfile();
         await toast.present();
@@ -153,6 +145,15 @@ window.generateQRCode = async (canv, uid) => {
   }, (err, url) => {
     $(canv).attr("src", url);
   })
+
+  // Generate user file if it doesnt exist
+  const userDoc = await getDoc(doc(db, `users/${uid}`));
+  if (!userDoc.exists()) {
+    await setDoc(doc(db, `users/${uid}`), {
+      name: await getAuthDetail("name"),
+      friends: []
+    }, { merge: true })
+  }
 }
 
 window.beginScanning = async () => {
@@ -189,17 +190,7 @@ window.copyAuthCode = async () => {
     string: uid
   });
 
-  const toast = await toastController.create({
-    message: 'Friend code copied to clipboard',
-    duration: 2500,
-    position: "bottom",
-    buttons: [{
-      text: "OK",
-      role: "cancel"
-    }]
-  });
-
-  await toast.present();
+  showToasty('Friend code copied to clipboard');
 }
 
 window.addFriend = async (uidInput) => {
@@ -245,17 +236,7 @@ window.addFriend = async (uidInput) => {
       friends: arrayUnion(uid)
     }, { merge: true })
 
-    const toast = await toastController.create({
-      message: 'Friend successfully added',
-      duration: 2500,
-      position: "bottom",
-      buttons: [{
-        text: "OK",
-        role: "cancel"
-      }]
-    });
-
-    await toast.present();
+    showToasty("Friend successfully added");
   }
   catch (error) {
     showAlert("Update Error", "", error.message);

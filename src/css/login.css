@@ -1,11 +1,10 @@
 .inputsContainer {
-  padding: 20px;
   padding-bottom: 4px;
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 .inputContainerSingle {
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-item-background);
   padding-left: 12px;
   border-radius: 6px;
   margin-bottom: 12px;

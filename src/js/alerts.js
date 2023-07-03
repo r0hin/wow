@@ -8,3 +8,17 @@ export async function showAlert(title, header, body) {
   document.body.appendChild(alert);
   await alert.present();
 }
+
+export async function showToasty(message) {
+  const toast = await toastController.create({
+    message: message,
+    duration: 2500,
+    position: "bottom",
+    buttons: [{
+      text: "OK",
+      role: "cancel"
+    }]
+  });
+
+  await toast.present();
+}

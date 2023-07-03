@@ -7,11 +7,12 @@
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
-  <meta name="color-scheme" content="light dark" />
+  <meta id="metacolor" name="color-scheme" content="light dark" />
   
   <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.compat.css"/>
   
   <script type="module"
   src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"></script>
@@ -36,14 +37,9 @@
     
     <div id="app-login" class="page hidden">
       <ion-content fullscreen="true">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Wow 2</ion-card-title>
-          </ion-card-header>
-          
-          <ion-card-content>
-            Behold... the wow app. Send and recieve "wows" with your friends: Unlimited utility and fun! Just sign up.
-          </ion-card-content>
+        <div class="padding">
+          <h1 style="font-weight: 700;">Wow!</h1>
+          <p>Behold... send and recieve "wows" with your friends: Unlimited utility and fun! Just sign up below:</p>
           
           <div class="inputsContainer">
             <div class="inputContainerSingle">
@@ -58,7 +54,7 @@
             <ion-button id="signUpButton" onclick="logup()">Create Account</ion-button>
             <ion-button id="signInButton" onclick="login()">Sign In</ion-button>
           </div>
-        </ion-card>
+        </div>
       </ion-content>
       
     </div>    
@@ -173,29 +169,129 @@
             class settingsMain extends HTMLElement {
               connectedCallback() {
                 this.innerHTML = `
-                <ion-header translucent="true">
-                  <ion-toolbar>
-                    <ion-title>Settings</ion-title>
-                  </ion-toolbar>
-                </ion-header>
-                <ion-content fullscreen="true">
-                  <ion-header collapse="condense">
+                  <style>
+                    .list-header {
+                      font-size: 24px;
+                      margin-left: 16px;
+                      font-weight: 700
+                    }
+                  </style>
+                  <ion-header translucent="true">
                     <ion-toolbar>
-                      <ion-title size="large">Settings</ion-title>
+                      <ion-title>Settings</ion-title>
                     </ion-toolbar>
                   </ion-header>
-                  <ion-list inset="true">
-                    <ion-nav-link component="settings-account">
-                      <ion-item button>
-                        <ion-label>Profile & Account</ion-label>
+                  <ion-content fullscreen="true">
+                    <ion-header collapse="condense">
+                      <ion-toolbar>
+                        <ion-title size="large">Settings</ion-title>
+                      </ion-toolbar>
+                    </ion-header>
+                    <ion-list inset="true">
+                      <ion-nav-link component="settings-account">
+                        <ion-item button>
+                          <ion-label>Profile & Account</ion-label>
+                        </ion-item>
+                      </ion-nav-link>
+                    </ion-list>
+                    <ion-list inset="true">
+                      <br>
+                      <ion-label class="list-header">Theme</ion-label>
+                      <br><br>
+                      <ion-item>
+                        <ion-label>Device Appearance</ion-label>
+                        <ion-toggle id="deviceAppearanceToggle"></ion-toggle>
                       </ion-item>
-                    </ion-nav-link>
-                    <ion-item>
-                      <ion-label>More</ion-label>
-                    </ion-item>
-                  </ion-list>
-                </ion-content>
+                      <ion-item>
+                        <ion-label id="darkModeLabel" disabled="true">Dark Mode</ion-label>
+                        <ion-toggle id="darkAppearanceToggle" disabled="true"></ion-toggle>
+                      </ion-item>
+                    </ion-list>
+
+                    <ion-list inset="true" lines="inset">
+                      <br>
+                      <ion-label class="list-header">Extras</ion-label>
+                      <br><br>
+                      <ion-item button id="twitterLink">
+                        <ion-label>Twitter</ion-label>
+                        <ion-icon slot="end" name="logo-twitter"></ion-icon>
+                      </ion-item>
+                      <ion-item button id="emailLink">
+                        <ion-label>Email</ion-label>
+                        <ion-icon slot="end" name="mail"></ion-icon>
+                      </ion-item>
+                    </ion-list>
+
+                    <div style="padding: 16px;">
+                      <center>
+                        <ion-label>
+                          <p>Copyright Rohin, Inc. 2023.</p>
+                        </ion-label>
+                      </center>
+                    </div>
+                  </ion-content>
                 `;
+
+                $(`#twitterLink`).get(0).onclick = () => {
+                  window.open("https://twitter.com/r0hin12");
+                }
+
+                $(`#emailLink`).get(0).onclick = () => {
+                  window.open("mailto:me@r0h.in");
+                };
+
+                $(`#deviceAppearanceToggle`).on("ionChange", () => {
+                  const checked = $(`#deviceAppearanceToggle`).prop("checked");
+                  localStorage.setItem("deviceAppearance", checked);
+
+                  if (checked) {
+                    $(`#darkModeLabel`).prop("disabled", true);
+                    $(`#darkAppearanceToggle`).prop("disabled", true);
+                    
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                    toggleDarkTheme(prefersDark.matches);
+                  } else {
+                    $(`#darkModeLabel`).prop("disabled", false);
+                    $(`#darkAppearanceToggle`).prop("disabled", false);
+
+                    toggleDarkTheme($(`#darkAppearanceToggle`).prop("checked"))
+                  }
+                });
+
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                prefersDark.addEventListener('change', (mediaQuery) => {
+                  if (localStorage.getItem("deviceAppearance") == "true") {
+                    toggleDarkTheme(mediaQuery.matches)
+                  }
+                });
+
+                $(`#darkAppearanceToggle`).on("ionChange", () => {
+                  const checked = $(`#darkAppearanceToggle`).prop("checked");
+                  localStorage.setItem("darkMode", checked);
+                  toggleDarkTheme(checked);
+                });
+
+                const appearanceSaved = localStorage.getItem("deviceAppearance");
+                if (appearanceSaved == "false") {
+                  $(`#deviceAppearanceToggle`).prop("checked", false);
+                  $(`#darkModeLabel`).prop("disabled", false);
+                  $(`#darkAppearanceToggle`).prop("disabled", false);
+                }
+                else {
+                  $(`#deviceAppearanceToggle`).prop("checked", true);
+                }
+
+                const darkSaved = localStorage.getItem("darkMode");
+                if (darkSaved == "true") {
+                  $(`#darkAppearanceToggle`).prop("checked", true);
+                }
+                else {
+                  $(`#darkAppearanceToggle`).prop("checked", false);
+                }
+
+                if (appearanceSaved == "false") {
+                  toggleDarkTheme(darkSaved == "true");
+                }
               }
             }
             
@@ -217,7 +313,7 @@
                   <ion-list lines="inset">
                     <ion-item button id="profileEditDisplay">
                       <ion-label>Display</ion-label>
-                      <ion-note id="profileName" slot="end">...</ion-note>
+                      <ion-note  id="profileName" slot="end">...</ion-note>
                     </ion-item>
                     <ion-item>
                       <ion-label>Email</ion-label>
