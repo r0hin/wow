@@ -143,19 +143,16 @@ window.getAuthDetail = (type) => {
 
 window.generateQRCode = async (canv, uid) => {
   // Get screen width in px
-  const width = window.innerWidth;
-  console.log(canv, uid)
-  QRCode.toCanvas(canv, uid, {
-    width: width,
+  const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  QRCode.toDataURL(uid, {
     color: {
       dark: '#5856d6',  // Blue dots
       light: '#0000' // Transparent background
-    }
-  }, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
+    },
+    width: width
+  }, (err, url) => {
+    $(canv).attr("src", url);
+  })
 }
 
 window.beginScanning = async () => {
