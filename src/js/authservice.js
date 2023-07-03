@@ -62,7 +62,7 @@ window.prepareFriends = (list, card) => {
 
 window.signOut = async () => {
   try {
-    await auth.signOut();
+    await FirebaseAuthentication.signOut();
   } catch (error) {
     showAlert("Authentication Error", "", error.message);
   }
