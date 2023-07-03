@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "An Amazing Capacitor App",
   "main": "index.js",
-  "keywords": [
-    "capacitor",
-    "mobile"
-  ],
   "scripts": {
     "start": "vite",
     "build": "vite build",
@@ -18,6 +14,7 @@
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor/app": "^5.0.5",
+    "@capacitor/assets": "^2.0.4",
     "@capacitor/camera": "latest",
     "@capacitor/clipboard": "^5.0.5",
     "@capacitor/core": "latest",
