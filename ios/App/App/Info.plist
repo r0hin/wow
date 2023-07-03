@@ -56,5 +56,7 @@
   <string>To be able to scan barcodes to add friends</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CBBundleDisplayName</key>
+	<string>Wow!</string>
 </dict>
 </plist>
