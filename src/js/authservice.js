@@ -48,7 +48,10 @@ async function setupAuthListeners() {
   });
 
   FirebaseMessaging.addListener(`notificationReceived`, (notification) => {
-    console.log(notification);
+    // Disable notification when app is active
+    if (App.getState().isActive) {
+      // cancel notification somehow?
+    }
   });
 
   FirebaseMessaging.addListener(`notificationActionPerformed`, (action) => {
