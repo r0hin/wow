@@ -15,12 +15,16 @@ export async function showToasty(message) {
   const toast = await toastController.create({
     message: message,
     duration: 2500,
-    position: "bottom",
+    position: "top",
     buttons: [{
       text: "OK",
       role: "cancel"
-    }]
+    }],
+    cssClass: "toasty"
   });
+
+  // Custom background color
+
 
   await toast.present();
 }

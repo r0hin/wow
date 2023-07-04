@@ -140,9 +140,12 @@
                 $(`#open-modal`).click(async () => {
                   generateQRCode($("#qrCanvas")[0], await getAuthDetail("uid"));
                 });
-                
-                $(`#scan-modal`).click(() => {
+
+                window.toggleScanInfoBox = () => {
                   $(`#scanInfoBox`).toggleClass(`hidden`);
+                }
+
+                $(`#scan-modal`).click(() => {
                   beginScanning();
                 });
                 

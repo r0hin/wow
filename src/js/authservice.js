@@ -110,8 +110,10 @@ window.editDisplayName = async () => {
         
         showToasty("Display name successfully updated");
         
-        refreshProfile();
-        await toast.present();
+        try {
+          refreshProfile();
+        } catch (error) {  
+        }
       } catch (error) {
         showAlert("Update Error", "", error.message);
       }
@@ -182,6 +184,7 @@ window.beginScanning = async () => {
     window.scanning = true;
   }
 
+  toggleScanInfoBox();
   document.querySelector('body').classList.add('scanner-active');
 
   await BarcodeScanner.checkPermission({ force: true });
@@ -199,6 +202,7 @@ function stopScanning() {
   BarcodeScanner.stopScan();
   document.querySelector('body').classList.remove('scanner-active');
   window.scanning = false;
+  toggleScanInfoBox();
 };
 
 window.copyAuthCode = async () => {
