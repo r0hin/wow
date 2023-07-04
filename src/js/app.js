@@ -2,11 +2,9 @@
 import { StatusBar, Style } from '@capacitor/status-bar';
 
 import { auth, db } from "./authservice"
-import { addDoc, arrayRemove, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc, updateDoc } from "firebase/firestore"
 
 import { showToasty } from './alerts';
-import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-console.log(db)
 
 window.activeSnapshotListener = null;
 window.scrollTimeout = null;
@@ -48,7 +46,6 @@ window.loadFriends = async (list, card) => {
 
   try { friendsSnapshotListener() } catch (error) {}
   friendsSnapshotListener = onSnapshot(doc(db, `users/${await getAuthDetail("uid")}`), async (selfDoc) => {
-
     if (lastPaintUID !== selfDoc.id) {
       $(list).empty();
       $(`#home-nav`).get(0).popToRoot();
@@ -77,18 +74,26 @@ window.loadFriends = async (list, card) => {
     friendsCache = friends;
 
     // Add new friends
-    additions.forEach(async (friend) => {
+    for (let i = 0; i < additions.length; i++) {
+      const friend = additions[i]; 
       const userDoc = await getDoc(doc(db, `users/${friend}`));
       const friendData = userDoc.data();
 
       const a = document.createElement("ion-nav-link");
       a.setAttribute("component", `friend-${friend}`);
+      a.onclick = async () => {
+        // Remove badge
+        updateDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
+          badges: arrayRemove(friend)
+        }, { merge: true });
+      }
       a.setAttribute("router-direction", "forward");
       a.classList.add("friend");
       a.id = friend;
       a.innerHTML = `
         <ion-item button>
           <ion-label>${friendData.name}</ion-label>
+          <ion-badge class="badge hidden" id="${friend}badge" color="primary">!</ion-badge>
         </ion-item>
       `;
       list.appendChild(a);
@@ -110,10 +115,9 @@ window.loadFriends = async (list, card) => {
                 display: flex;
                 flex-direction: column;
                 max-width: 450px;
-                margin: 0 auto;
                 padding: 0;
-                padding-top: 12px;
                 list-style: none;
+                margin: 16px;
               }
 
               .shared {
@@ -189,8 +193,15 @@ window.loadFriends = async (list, card) => {
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                height: 60px;
-                margin-top: 20px;
+                height: 48px;
+              }
+
+              #controls > * {
+                margin: 0 8px;
+              }
+
+              .hidden {
+                display: none !important;
               }
             </style>
             <ion-header>
@@ -208,12 +219,13 @@ window.loadFriends = async (list, card) => {
                 </ion-buttons>
               </ion-toolbar>
             </ion-header>
-            <ion-content class="ion-padding">
+            <ion-content>
               <ion-content id="messagesContainer">
                 <ol id="messages"></ol>
               </ion-content>
               <div id="controls">
-                <ion-button id="sendButton">Send Message</ion-button>
+                <ion-button id="sendButton">Send Wow!</ion-button>
+                <ion-button id="sendButton2">Send Womp Womp</ion-button>
               </div>
             </ion-content>
           `;
@@ -226,11 +238,13 @@ window.loadFriends = async (list, card) => {
               role: 'destructive',
               handler: async () => {
                 await setDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
-                  friends: arrayRemove(friend)
+                  friends: arrayRemove(friend),
+                  badges: arrayRemove(friend)
                 }, { merge: true });
 
                 await setDoc(doc(db, `users/${friend}`), {
-                  friends: arrayRemove(await getAuthDetail("uid"))
+                  friends: arrayRemove(await getAuthDetail("uid")),
+                  badges: arrayRemove(await getAuthDetail("uid"))
                 }, { merge: true });
 
                 showToasty("Friend removed successfully");
@@ -271,7 +285,7 @@ window.loadFriends = async (list, card) => {
                   messageElement.classList.add("received");
                 }
                 messageElement.innerHTML = `
-                  <ion-label>Wow!</ion-label>
+                  <ion-label>${message.text}</ion-label>
                 `;
 
                 if ($(`#messages`).children().length && $(`#messages`).children().last().get(0).getAttribute("data-sender") == message.sender) {
@@ -290,11 +304,38 @@ window.loadFriends = async (list, card) => {
           })
 
           $(`#sendButton`).on("click", async () => {
+            $(`#sendButton`).attr("disabled", true);
+            $(`#sendButton2`).attr("disabled", true);
+            setTimeout(() => {
+              $(`#sendButton`).attr("disabled", false);
+              $(`#sendButton2`).attr("disabled", false);
+            }, 999);
             const message = {
               sender: await getAuthDetail("uid"),
               timestamp: Date.now(),
               text: "Wow!",
             }
+            await updateDoc(doc(db, `users/${friend}`), {
+              badges: arrayUnion(await getAuthDetail("uid"))
+            });
+            await addDoc(collection(db, `relations/${chatId}/chats`), message)
+          });
+
+          $(`#sendButton2`).on("click", async () => {
+            $(`#sendButton`).attr("disabled", true);
+            $(`#sendButton2`).attr("disabled", true);
+            setTimeout(() => {
+              $(`#sendButton`).attr("disabled", false);
+              $(`#sendButton2`).attr("disabled", false);
+            }, 500);
+            const message = {
+              sender: await getAuthDetail("uid"),
+              timestamp: Date.now(),
+              text: "Womp Womp",
+            }
+            await updateDoc(doc(db, `users/${friend}`), {
+              badges: arrayUnion(await getAuthDetail("uid"))
+            });
             addDoc(collection(db, `relations/${chatId}/chats`), message)
           });
         }
@@ -306,10 +347,11 @@ window.loadFriends = async (list, card) => {
         console.log(error)
         // Already defined
       }
-    });
+    }
 
     // Remove old friends
-    deletions.forEach(async (friend) => {
+    for (let i = 0; i < deletions.length; i++) {
+      const friend = deletions[i];
       $(list).find(`#${friend}`).remove();
       const component = (await $(`#home-nav`).get(0).getActive()).component;
 
@@ -317,7 +359,23 @@ window.loadFriends = async (list, card) => {
       if (component === `friend-${friend}` || component === `friend-${friend.toLowerCase()}`) {
         $(`#home-nav`).get(0).popToRoot();
       }
+    }
+
+    const badgeUsers = selfDoc.data().badges || [];
+    $(`.badge`).addClass("hidden")
+    badgeUsers.forEach(async (badgeUser) => {
+      $(`#${badgeUser}badge`).removeClass("hidden");
     });
+
+    const component = (await $(`#home-nav`).get(0).getActive()).component;
+    if (`${component}`.startsWith("friend-")) {
+      const activeID = `${component}`.split(`-`).pop();
+      if (badgeUsers.includes(activeID)) {
+        updateDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
+          badges: arrayRemove(activeID)
+        }, { merge: true });
+      }
+    }
   })
 }
 

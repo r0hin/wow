@@ -2,12 +2,14 @@ import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged,  } from "@firebase/auth";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { showAlert, showToasty } from "./alerts";
 
 import QRCode from "qrcode"
 import { Clipboard } from '@capacitor/clipboard';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { Capacitor } from "@capacitor/core";
+import { App } from "@capacitor/app";
 
 window.scanning = false;
 
@@ -25,7 +27,7 @@ const getFirebaseAuth = (app) => {
     console.log("Native platform detected")
     return initializeAuth(getApp(), {
       persistence: indexedDBLocalPersistence,
-    })
+    });
   }
   else {
     return getAuth(app);
@@ -43,10 +45,35 @@ setupAuthListeners();
 async function setupAuthListeners() {
   onAuthStateChanged(auth, (user) => {
     triggerAuthUpdate();
-  })
+  });
+
+  FirebaseMessaging.addListener(`notificationReceived`, (notification) => {
+    console.log(notification);
+  });
+
+  FirebaseMessaging.addListener(`notificationActionPerformed`, (action) => {
+    console.log(action)
+  });
 }
 
+App.addListener("appStateChange", async (state) => {
+  if (state.isActive) {
+    await FirebaseMessaging.removeAllDeliveredNotifications();
+  }
+})
+
 window.manualTriggerAuth = triggerAuthUpdate;
+
+function getToken() {
+  return new Promise(async (resolve, reject) => {
+    const options = {
+      vapidKey: "BGmBqGKOda3AHlkf73Vpi7pQSaWnYHmrzkju6K5AjJA-DGz-JgK7nJ_VhFodlUJQM1o_WAyHyjVy8uOx3wOfxRI"
+    }
+    
+    const { token } = await FirebaseMessaging.getToken(options);
+    resolve(token);
+  })
+}
 
 async function triggerAuthUpdate() {
   window.user = auth.currentUser;
@@ -54,6 +81,15 @@ async function triggerAuthUpdate() {
     $(`#app-loading`).addClass("hidden");
     $(`#app-login`).addClass("hidden");
     $(`#app-home`).removeClass("hidden");
+
+    const response = await FirebaseMessaging.requestPermissions();
+    if (response.receive === "granted") {
+      const token = await getToken();
+      console.log("Updating FCM token!")
+      await setDoc(doc(db, `fcm/${user.uid}`), {
+        tokens: token
+      }, { merge: true })
+    }
   }
   else {
     $(`#app-loading`).addClass("hidden");
@@ -70,6 +106,9 @@ window.prepareFriends = (list, card) => {
 
 window.signOut = async () => {
   try {
+    await setDoc(doc(db, `fcm/${window.user.uid}`), {
+      tokens: ""
+    }, { merge: true })
     await FirebaseAuthentication.signOut();
     await getFirebaseAuth().signOut();
   } catch (error) {

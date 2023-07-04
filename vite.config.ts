@@ -8,5 +8,9 @@ export default defineConfig({
     minify: false,
     emptyOutDir: true,
   },
-  plugins: [mkcert()]
+  plugins: [mkcert()],
+  server: {
+    https: true,
+    port: 3000,
+  }
 });

@@ -41,6 +41,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor-firebase/authentication/-/authentication-5.0.1.tgz#72df08cc93b9fad40f0ad5a717f1d621cdbbd6e3"
   integrity sha512-fef6W6M2yz5xPW+Zp9HTF+6u3xVWCM30dqo/F6OGvi9/vxQhZ+lLoS7xnNyOhgI68+YWRjV1PU03RYhqygPGuA==
 
+"@capacitor-firebase/messaging@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor-firebase/messaging/-/messaging-5.0.1.tgz#67eefb1e9643988933857e991f65eabc3c51d7c8"
+  integrity sha512-KPmVukeJYOfxuIhpOmb+XGkWYKSL9HBVO9Gxn+JHcrs4lKURo5PtVpiw3Z1ulzSiqHny6PyIWSPxCcL3eFg8NQ==
+
 "@capacitor/app@^5.0.5":
   version "5.0.5"
   resolved "https://registry.npmjs.org/@capacitor/app/-/app-5.0.5.tgz"
