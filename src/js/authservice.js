@@ -79,7 +79,7 @@ window.signOut = async () => {
 
 window.editDisplayName = async () => {
   const alert = document.createElement('ion-alert');
-  alert.header = "Edit Display Name";
+  alert.header = "Set Display Name";
   alert.buttons = [{
     text: "Cancel",
     role: "cancel"
@@ -131,21 +131,15 @@ window.editDisplayName = async () => {
 }
 
 window.getAuthDetail = (type) => {
-  console.trace();
   console.log("Auth detail requested of type: " + type);
   return new Promise(async (resolve, reject) => {
     switch (type) {
       case "name":
         const userDoc = await getDoc(doc(db, `users/${window.user.uid}`));
-        if (userDoc.exists() && userDoc.data().name) {
-          resolve(userDoc.data().name);
-        }
-        else {
-          resolve(window.user.email.split("@")[0]);
-        }
+        resolve(userDoc.data().name);
         break;
       case "email":
-        resolve(window.user.email);
+        resolve(window.user.email || "no-email");
         break;
       case "uid":
         resolve(window.user.uid);
@@ -280,18 +274,24 @@ $(`#signInButton`).get(0).onclick = async () => {
     rawNonce: result.credential?.nonce
   });
 
-  console.log(credential)
 
   const user = await signInWithCredential(getFirebaseAuth(), credential);
 
-  let displayName = "";
+  let displayName = null;
   try {
-    displayName = user.user.displayName;
+    displayName = result.user.displayName
   } catch (error) {
-    displayName = `${Date.now()}`;
+    try {
+      displayName = user.user.email.split("@")[0]
+    }
+    catch (error) {
+      try {
+        displayName = result.user.email.split("@")[0]
+      } catch (error) {
+        displayName = `User ${user.user.uid.substring(0, 5)}`
+      }
+    }
   }
-
-  console.log(user)
 
   const currentUser = await FirebaseAuthentication.getCurrentUser();
   console.log(currentUser)
@@ -304,6 +304,8 @@ $(`#signInButton`).get(0).onclick = async () => {
     }, { merge: true });
 
     showToasty("Account successfully created");
+
+    editDisplayName();
   }
   else {
     showToasty("Successfully signed in");
