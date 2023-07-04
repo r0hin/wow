@@ -15,11 +15,10 @@
 }
 
 .buttonList {
-  padding-top: 4px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 17px;
+  padding-bottom: 48px;
 }
 
 .buttonList > * {

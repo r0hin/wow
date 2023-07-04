@@ -1,10 +1,11 @@
 // Use matchMedia to check the user preference
 import { StatusBar, Style } from '@capacitor/status-bar';
 
-import { db } from "./authservice"
+import { auth, db } from "./authservice"
 import { addDoc, arrayRemove, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
 
 import { showToasty } from './alerts';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 console.log(db)
 
 window.activeSnapshotListener = null;
@@ -35,12 +36,16 @@ window.addEventListener("keyboardWillHide", () => {
   $(`#app-login`).get(0).setAttribute("style", "");
 });
 
-
 window.friendsCache = [];
 window.lastPaintUID = null;
 window.friendsSnapshotListener = null;
 
 window.loadFriends = async (list, card) => {
+  const user = auth.currentUser;
+  if (!user) {
+    return;
+  }
+
   try { friendsSnapshotListener() } catch (error) {}
   friendsSnapshotListener = onSnapshot(doc(db, `users/${await getAuthDetail("uid")}`), async (selfDoc) => {
 

@@ -37,22 +37,18 @@
     
     <div id="app-login" class="page hidden">
       <ion-content fullscreen="true">
-        <div class="padding">
-          <h1 style="font-weight: 700;">Wow!</h1>
-          <p>Behold... send and recieve "wows" with your friends: Unlimited utility and fun! Just sign up below:</p>
-          
-          <div class="inputsContainer">
-            <div class="inputContainerSingle">
-              <ion-input id="emailInput" disabled="false" type="email" label="Email" placeholder="example@domain.net"></ion-input>
+        <div class="loginBoxContainer">
+          <div class="padding loginBox">
+            <center>
+              <img id="entrylogo" src="./assets/imgs/logo.png" alt="">
+            </center>
+            <p>Behold... send and recieve "wows" with your friends: Unlimited utility and fun! Just sign in below:</p>
+            <div class="buttonList">
+              <button id="signInButton" onclick="login()">
+                <ion-icon slot="start" size="medium" name="logo-apple"></ion-icon>
+                Sign In With Apple
+              </button>
             </div>
-            <div class="inputContainerSingle">
-              <ion-input id="passInput" disabled="false" type="password" label="Password" placeholder="***"></ion-input>
-            </div>
-          </div>
-          
-          <div class="buttonList">
-            <ion-button id="signUpButton" onclick="logup()">Create Account</ion-button>
-            <ion-button id="signInButton" onclick="login()">Sign In</ion-button>
           </div>
         </div>
       </ion-content>
@@ -126,8 +122,6 @@
                   </ion-content>
                 `;
 
-                console.log("Running prepare friends")
-                
                 prepareFriends($(`#friendList`).get(0), $(`#newFriendCard`));
 
                 const qrModal = document.querySelector('#qrModal');
@@ -282,6 +276,8 @@
                 }
                 else {
                   $(`#deviceAppearanceToggle`).prop("checked", true);
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                  toggleDarkTheme(prefersDark.matches);
                 }
 
                 const darkSaved = localStorage.getItem("darkMode");

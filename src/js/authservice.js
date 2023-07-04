@@ -1,7 +1,7 @@
 import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
-import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential } from "@firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged,  } from "@firebase/auth";
 import { showAlert, showToasty } from "./alerts";
 
 import QRCode from "qrcode"
@@ -22,6 +22,7 @@ const firebaseConfig = {
 
 const getFirebaseAuth = (app) => {
   if (Capacitor.isNativePlatform()) {
+    console.log("Native platform detected")
     return initializeAuth(getApp(), {
       persistence: indexedDBLocalPersistence,
     })
@@ -34,11 +35,21 @@ const getFirebaseAuth = (app) => {
 export const app = initializeApp(firebaseConfig);
 export const auth = getFirebaseAuth(app);
 export const db = getFirestore(app);
-window.user = null;
 
-FirebaseAuthentication.addListener("authStateChange", (data) => {
-  const user = data.user;
-  window.user = user;
+window.user = false;
+
+setupAuthListeners();
+
+async function setupAuthListeners() {
+  onAuthStateChanged(auth, (user) => {
+    triggerAuthUpdate();
+  })
+}
+
+window.manualTriggerAuth = triggerAuthUpdate;
+
+async function triggerAuthUpdate() {
+  window.user = auth.currentUser;
   if (user) {
     $(`#app-loading`).addClass("hidden");
     $(`#app-login`).addClass("hidden");
@@ -49,20 +60,18 @@ FirebaseAuthentication.addListener("authStateChange", (data) => {
     $(`#app-login`).removeClass("hidden");
     $(`#app-home`).addClass("hidden");
   }
-})
+}
 
 window.prepareFriends = (list, card) => {
-  FirebaseAuthentication.addListener("authStateChange", (data) => {
-    const user = data.user;
-    if (user) {
-      loadFriends(list, card);
-    }
+  onAuthStateChanged(auth, (user) => {
+    loadFriends(list, card);
   });
 }
 
 window.signOut = async () => {
   try {
     await FirebaseAuthentication.signOut();
+    await getFirebaseAuth().signOut();
   } catch (error) {
     showAlert("Authentication Error", "", error.message);
   }
@@ -122,6 +131,7 @@ window.editDisplayName = async () => {
 }
 
 window.getAuthDetail = (type) => {
+  console.trace();
   console.log("Auth detail requested of type: " + type);
   return new Promise(async (resolve, reject) => {
     switch (type) {
@@ -256,43 +266,46 @@ window.addFriend = async (uidInput) => {
   }
 }
 
-$(`#signUpButton`).get(0).onclick = async () => {
-  const email = $(`#emailInput`).val()
-  const password = $(`#passInput`).val()
+$(`#signInButton`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithApple({
+    skipNativeAuth: true,
+    scopes: ["email", "name"]
+  });
 
+  console.log(result)
+
+  const provider = new OAuthProvider("apple.com");
+  const credential = provider.credential({
+    idToken: result.credential?.idToken,
+    rawNonce: result.credential?.nonce
+  });
+
+  console.log(credential)
+
+  const user = await signInWithCredential(getFirebaseAuth(), credential);
+
+  let displayName = "";
   try {
-    const result = await FirebaseAuthentication.createUserWithEmailAndPassword({
-      email: email,
-      password: password,
-    });
+    displayName = user.user.displayName;
+  } catch (error) {
+    displayName = `${Date.now()}`;
+  }
 
-    const credential = result.credential // Null due to lib bug.
+  console.log(user)
 
-    await signInWithCredential(auth, credential)
+  const currentUser = await FirebaseAuthentication.getCurrentUser();
+  console.log(currentUser)
+
+  const userDoc = await getDoc(doc(db, `users/${user.user.uid}`));
+  if (!userDoc.exists()) {
+    await setDoc(doc(db, `users/${user.user.uid}`), {
+      name: displayName,
+      friends: []
+    }, { merge: true });
 
     showToasty("Account successfully created");
-  } catch (error) {
-    showAlert("Authentication Error", "", error.message);
   }
-}
-
-$(`#signInButton`).get(0).onclick = async () => {
-  const email = $(`#emailInput`).val()
-  const password = $(`#passInput`).val()
-
-  try {
-    const result = await FirebaseAuthentication.signInWithEmailAndPassword({
-      email: email,
-      password: password,
-    })
-
-    const credential = result.credential // Null due to lib bug.
-
-    await signInWithCredential(auth, result.credential)
-
-    showToasty("Signed in successfully");
-  }
-  catch (error) {
-    showAlert("Authentication Error", "", error.message);
+  else {
+    showToasty("Successfully signed in");
   }
 }

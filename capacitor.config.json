@@ -11,7 +11,8 @@
       "resize": "none"
     },
     "FirebaseAuthentication": {
-      "skipNativeAuth": false
+      "skipNativeAuth": false,
+      "providers": ["apple.com"]
     }
   },
   "server": {
