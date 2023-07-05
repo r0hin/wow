@@ -114,7 +114,6 @@ window.loadFriends = async (list, card) => {
               
                 display: flex;
                 flex-direction: column;
-                max-width: 450px;
                 padding: 0;
                 list-style: none;
                 margin: 16px;

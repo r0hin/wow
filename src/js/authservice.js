@@ -93,6 +93,9 @@ async function triggerAuthUpdate() {
         tokens: token
       }, { merge: true })
     }
+    else {
+      showToasty(":( You won't receive notifications. You can enable notifications in device settings")
+    }
   }
   else {
     $(`#app-loading`).addClass("hidden");
