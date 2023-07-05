@@ -22,9 +22,12 @@ export PATH
 node -v
 npm -v
 
+# Install yarn
+npm install -g yarn
+
 # Install dependencies
-npm ci
+yarn
 # or `pnpm install --frozen-lockfile` or `yarn install --frozen-lockfile`
-npm run build 
+yarn build
 # or npm run build
-npm run sync:ios
+yarn run sync:ios
