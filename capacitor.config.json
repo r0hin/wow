@@ -13,9 +13,12 @@
     "FirebaseAuthentication": {
       "skipNativeAuth": false,
       "providers": ["apple.com"]
+    },
+    "FirebaseMessaging": {
+      "presentationOptions": ["badge", "sound", "alert"]
     }
   },
-  "servera": {
+  "server": {
     "url": "https://192.168.2.133:3000/",
     "cleartext": true
   }
