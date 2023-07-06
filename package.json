@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "ios": "npx cap sync && npx cap copy",
     "ionic:build": "vite build",
-    "ionic:serve": "vite"
+    "ionic:serve": "vite",
+    "sync:ios": "npx cap sync ios"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
@@ -23,6 +24,7 @@
     "@capacitor/haptics": "^5.0.5",
     "@capacitor/ios": "^5.1.0",
     "@capacitor/keyboard": "^5.0.5",
+    "@capacitor/local-notifications": "^5.0.5",
     "@capacitor/splash-screen": "latest",
     "@capacitor/status-bar": "^5.0.5",
     "@ionic/core": "^7.1.1",

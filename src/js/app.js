@@ -5,6 +5,7 @@ import { auth, db } from "./authservice"
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc, updateDoc } from "firebase/firestore"
 
 import { showToasty } from './alerts';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 window.activeSnapshotListener = null;
 window.scrollTimeout = null;
@@ -114,7 +115,6 @@ window.loadFriends = async (list, card) => {
               
                 display: flex;
                 flex-direction: column;
-                max-width: 450px;
                 padding: 0;
                 list-style: none;
                 margin: 16px;
@@ -408,4 +408,3 @@ $(`#settingstabutton`).on("click", () => {
     $(`#settings-nav`).get(0).popToRoot();
   }
 });
-

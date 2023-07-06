@@ -1,7 +1,7 @@
 import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
-import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged,  } from "@firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, reauthenticateWithCredential } from "@firebase/auth";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { showAlert, showToasty } from "./alerts";
 
@@ -10,6 +10,7 @@ import { Clipboard } from '@capacitor/clipboard';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { Capacitor } from "@capacitor/core";
 import { App } from "@capacitor/app";
+import { LocalNotifications } from "@capacitor/local-notifications";
 
 window.scanning = false;
 
@@ -47,10 +48,31 @@ async function setupAuthListeners() {
     triggerAuthUpdate();
   });
 
-  FirebaseMessaging.addListener(`notificationReceived`, (notification) => {
+  console.log("Scheduling")
+  FirebaseMessaging.addListener(`notificationReceived`, async (notification) => {
+    console.log("Notification received")
     // Disable notification when app is active
-    if (App.getState().isActive) {
-      // cancel notification somehow?
+    const state = await App.getState();
+    if (!state.isActive) {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: notification.notification.data.title,
+            body: notification.notification.data.body,
+            id: new Date().getTime(),
+          }
+        ],
+      })
+    }
+    else {
+      const component = (await $(`#home-nav`).get(0).getActive()).component;
+      if (`${component}`.startsWith("friend-")) {
+        const activeID = `${component}`.split(`-`).pop();
+        if (activeID === notification.notification.data.sender) {
+          return;
+        }
+      }
+      showToasty(`${notification.notification.data.title}: ${notification.notification.data.body}`);
     }
   });
 
@@ -92,6 +114,9 @@ async function triggerAuthUpdate() {
       await setDoc(doc(db, `fcm/${user.uid}`), {
         tokens: token
       }, { merge: true })
+    }
+    else {
+      showToasty(":( You won't receive notifications. You can enable notifications in device settings")
     }
   }
   else {
@@ -356,4 +381,47 @@ $(`#signInButton`).get(0).onclick = async () => {
   else {
     showToasty("Successfully signed in");
   }
+}
+
+window.deleteAccount = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    return;
+  }
+
+  const alert = document.createElement('ion-alert');
+  alert.header = "Delete Account";
+  alert.message = "Are you sure you want to delete your account? This action cannot be undone.";
+  alert.buttons = [
+    {
+      text: "Cancel",
+      role: "cancel",
+    },
+    {
+      text: "Delete",
+      role: "destructive",
+      handler: async () => {
+        const result = await FirebaseAuthentication.signInWithApple({
+          skipNativeAuth: true,
+        });
+
+        console.log(result)
+
+        const provider = new OAuthProvider("apple.com");
+        const credential = provider.credential({
+          idToken: result.credential?.idToken,
+          rawNonce: result.credential?.nonce
+        });
+
+        const user = await reauthenticateWithCredential(auth.currentUser, credential)
+
+        await user.user.delete();
+
+        showToasty("Account successfully deleted. Your data is queued for deletion.");
+      }
+    },
+  ];
+
+  document.body.appendChild(alert);
+  await alert.present();
 }

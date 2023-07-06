@@ -141,6 +141,11 @@
   resolved "https://registry.npmjs.org/@capacitor/keyboard/-/keyboard-5.0.5.tgz"
   integrity sha512-pB2o15C8Cz3QqDcToU4H0B/i+LLXYPQVtShukywMlVEJZ6UUy+KSK8XCg/YPDZBY9E0lSprHw4+NBqH0HTYRKQ==
 
+"@capacitor/local-notifications@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@capacitor/local-notifications/-/local-notifications-5.0.5.tgz#869c51e9b170c95755ad564173d850c1082e8276"
+  integrity sha512-Gq/yj7fVEkc5gR+ZHpGqhiCHbayOqBbIuwXmLhbUr2bECQ0PVPvH6A4KITvzUhCHh7kVGg8LZelRN5atxLXmiA==
+
 "@capacitor/splash-screen@latest":
   version "5.0.5"
   resolved "https://registry.npmjs.org/@capacitor/splash-screen/-/splash-screen-5.0.5.tgz"
