@@ -1,7 +1,7 @@
 import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-import { arrayUnion, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
-import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, reauthenticateWithCredential } from "@firebase/auth";
+import { arrayUnion, collection, doc, getCountFromServer, getDoc, getFirestore, query, setDoc, where } from "firebase/firestore"
+import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, reauthenticateWithCredential, GoogleAuthProvider, TwitterAuthProvider } from "@firebase/auth";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { showAlert, showToasty } from "./alerts";
 
@@ -48,7 +48,6 @@ async function setupAuthListeners() {
     triggerAuthUpdate();
   });
 
-  console.log("Scheduling")
   FirebaseMessaging.addListener(`notificationReceived`, async (notification) => {
     console.log("Notification received")
     // Disable notification when app is active
@@ -103,26 +102,55 @@ function getToken() {
 async function triggerAuthUpdate() {
   window.user = auth.currentUser;
   if (user) {
-    $(`#app-loading`).addClass("hidden");
-    $(`#app-login`).addClass("hidden");
-    $(`#app-home`).removeClass("hidden");
 
-    const response = await FirebaseMessaging.requestPermissions();
-    if (response.receive === "granted") {
-      const token = await getToken();
-      console.log("Updating FCM token!")
-      await setDoc(doc(db, `fcm/${user.uid}`), {
-        tokens: token
-      }, { merge: true })
+    // Check if user has setup
+    const userDoc = await getDoc(doc(db, `users/${user.uid}`));
+    if (!userDoc.exists() || userDoc.data().setup !== true) {
+      $(`#app-loading`).addClass("hidden");
+      $(`#app-home`).addClass("hidden");
+      $(`#app-login`).addClass("hidden");
+      $(`#app-setup`).removeClass("hidden");
+
+      // const count = await getNumberOfUsers();
+      const count = 91;
+
+      let ending = "th";
+      if (count % 10 === 1) {
+        ending = "st";
+      }
+      else if (count % 10 === 2) {
+        ending = "nd";
+      }
+      else if (count % 10 === 3) {
+        ending = "rd";
+      }
+
+      $(`#CountPlaqueEntryTitle`).html(`${count}<span>${ending}</span>`);
     }
     else {
-      showToasty(":( You won't receive notifications. You can enable notifications in device settings")
+      $(`#app-setup`).addClass("hidden");
+      $(`#app-loading`).addClass("hidden");
+      $(`#app-login`).addClass("hidden");
+      $(`#app-home`).removeClass("hidden");
+
+      const response = await FirebaseMessaging.requestPermissions();
+      if (response.receive === "granted") {
+        const token = await getToken();
+        console.log("Updating FCM token!")
+        await setDoc(doc(db, `fcm/${user.uid}`), {
+          tokens: token
+        }, { merge: true })
+      }
+      else {
+        showToasty(":( You won't receive notifications. You can enable notifications in device settings")
+      }
     }
   }
   else {
     $(`#app-loading`).addClass("hidden");
-    $(`#app-login`).removeClass("hidden");
+    $(`#app-setup`).addClass("hidden");
     $(`#app-home`).addClass("hidden");
+    $(`#app-login`).removeClass("hidden");
   }
 }
 
@@ -272,6 +300,14 @@ function stopScanning() {
   toggleScanInfoBox();
 };
 
+window.getNumberOfUsers = () => {
+  return new Promise(async (resolve, reject) => {
+    const snapshot = await getCountFromServer(query(collection(db, `users`), where("setup", "==", true)));
+    const count = snapshot.data().count;
+    resolve(count);
+  })
+}
+
 window.copyAuthCode = async () => {
   const uid = await getAuthDetail("uid");
   await Clipboard.write({
@@ -331,13 +367,11 @@ window.addFriend = async (uidInput) => {
   }
 }
 
-$(`#signInButton`).get(0).onclick = async () => {
+$(`#signInButtonApple`).get(0).onclick = async () => {
   const result = await FirebaseAuthentication.signInWithApple({
     skipNativeAuth: true,
-    scopes: ["email", "name"]
+    scopes: ["email"]
   });
-
-  console.log(result)
 
   const provider = new OAuthProvider("apple.com");
   const credential = provider.credential({
@@ -345,83 +379,22 @@ $(`#signInButton`).get(0).onclick = async () => {
     rawNonce: result.credential?.nonce
   });
 
-
-  const user = await signInWithCredential(getFirebaseAuth(), credential);
-
-  let displayName = null;
-  try {
-    displayName = result.user.displayName
-  } catch (error) {
-    try {
-      displayName = user.user.email.split("@")[0]
-    }
-    catch (error) {
-      try {
-        displayName = result.user.email.split("@")[0]
-      } catch (error) {
-        displayName = `User ${user.user.uid.substring(0, 5)}`
-      }
-    }
-  }
-
-  const currentUser = await FirebaseAuthentication.getCurrentUser();
-  console.log(currentUser)
-
-  const userDoc = await getDoc(doc(db, `users/${user.user.uid}`));
-  if (!userDoc.exists()) {
-    await setDoc(doc(db, `users/${user.user.uid}`), {
-      name: displayName,
-      friends: []
-    }, { merge: true });
-
-    showToasty("Account successfully created");
-
-    editDisplayName();
-  }
-  else {
-    showToasty("Successfully signed in");
-  }
+  await signInWithCredential(getFirebaseAuth(), credential);
 }
 
-window.deleteAccount = async () => {
-  const user = auth.currentUser;
-  if (!user) {
-    return;
-  }
+$(`#signInButtonGoogle`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithGoogle({
+    skipNativeAuth: false,
+  });
+  const credential = GoogleAuthProvider.credential(result.credential.idToken);
+  await signInWithCredential(getFirebaseAuth(), credential);
+}
 
-  const alert = document.createElement('ion-alert');
-  alert.header = "Delete Account";
-  alert.message = "Are you sure you want to delete your account? This action cannot be undone.";
-  alert.buttons = [
-    {
-      text: "Cancel",
-      role: "cancel",
-    },
-    {
-      text: "Delete",
-      role: "destructive",
-      handler: async () => {
-        const result = await FirebaseAuthentication.signInWithApple({
-          skipNativeAuth: true,
-        });
-
-        console.log(result)
-
-        const provider = new OAuthProvider("apple.com");
-        const credential = provider.credential({
-          idToken: result.credential?.idToken,
-          rawNonce: result.credential?.nonce
-        });
-
-        const user = await reauthenticateWithCredential(auth.currentUser, credential)
-
-        await user.user.delete();
-
-        showToasty("Account successfully deleted. Your data is queued for deletion.");
-      }
-    },
-  ];
-
-  document.body.appendChild(alert);
-  await alert.present();
+$(`#signInButtonTwitter`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithTwitter({
+    skipNativeAuth: false,
+  });
+  console.log(result)
+  const credential = TwitterAuthProvider.credential(result.credential?.accessToken, result.credential?.secret);
+  await signInWithCredential(getFirebaseAuth(), credential);
 }

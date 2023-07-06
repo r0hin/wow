@@ -26,13 +26,14 @@ window.toggleDarkTheme = (shouldAdd) => {
 }
 
 window.addEventListener('keyboardWillShow', (ev) => {
-  const kbh = ev.keyboardHeight;
-  $(`#app-login`).css("height", "calc(100% - " + kbh + "px) !important");
+  let kbh = ev.keyboardHeight;
+  kbh = kbh - 40 // Account for moved bottommost elements which have bottom padding for curved displays .... anyways
+  $(`#app-setup`).get(0).setAttribute("style", `height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom) - ${kbh}px)`);
   console.log($(`#ionicapptarget`).get(0))
 });
 
 window.addEventListener("keyboardWillHide", () => {
-  $(`#app-login`).get(0).setAttribute("style", "");
+  $(`#app-setup`).get(0).setAttribute("style", "");
 });
 
 window.friendsCache = [];

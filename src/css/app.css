@@ -2,7 +2,7 @@
   padding: 16px;
 }
 
-#signInButton {
+.signInButton {
   background-color: var(--ion-item-background);
   color: var(--ion-item-color);
   padding: 16px;
@@ -19,12 +19,12 @@
   transform: scale(1);
 }
 
-#signInButton:hover {
-  background-color: var(--ion-item-background-hover);
+.signInButton:hover, .signInButton:active {
+  background-color: var(--ion-item-background);
   transform: scale(0.95);
 }
 
-#signInButton > * {
+.signInButton > * {
   padding-right: 12px;
   padding-left: 12px;
 }
@@ -48,4 +48,120 @@
   height: 150px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+.lighttext {
+  color: var(--ion-color-medium)
+}
+
+.inputsContainer {
+  padding-bottom: 4px;
+  padding-top: 12px;
+}
+
+.inputContainerSingle {
+  margin: 16px;
+  background-color: var(--ion-item-background);
+  padding-left: 12px;
+  border-radius: 6px;
+  color: var(--ion-color-step-850);
+  margin-bottom: 12px;
+}
+
+.inputContainerSingle:last-child {
+  margin-bottom: 0;
+}
+
+.buttonList {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.continueButton {
+  width: calc(100% - 32px);
+}
+
+.bottomPart {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonList > * {
+  margin-bottom: 16px;
+}
+
+.centerAbs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.countPlaqueContainer {
+  margin-top: 148px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.countPlaque {
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.countPlaque h1 {
+  margin: 0px;
+  font-size: 64px;
+  font-weight: 700;
+  animation-name: spin, depth;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: 3s;
+  text-align: center;
+  background: var(--ion-color-primary);
+  background: radial-gradient(circle farthest-corner at center center, var(--ion-color-primary) 50%, var(--ion-color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.countPlaque span {
+  font-size: 24px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+.countsubtext {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+.usernametext {
+  font-size: 14px;
+  color: var(--ion-color-step-900);
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.usernametext > * {
+  margin: 8px
+}
+
+.usernametext > *:not(div) {
+  color: var(--ion-color-success);
 }

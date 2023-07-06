@@ -37,22 +37,56 @@
       <ion-content fullscreen="true">
         <div class="loginBoxContainer">
           <div class="padding loginBox">
-            <center>
-              <img id="entrylogo" src="./assets/imgs/logo.png" alt="">
+            <center class="animated zoomIn">
+              <img class="animated bounce slow" id="entrylogo" src="./assets/imgs/logo.png" alt="">
+              <br><br>
             </center>
-            <p>Behold... send and recieve "wows" with your friends: Unlimited utility and fun! Just sign in below:</p>
             <div class="buttonList">
-              <button id="signInButton" onclick="login()">
+              <button id="signInButtonApple" class="signInButton animated fadeInUp">
                 <ion-icon slot="start" size="medium" name="logo-apple"></ion-icon>
-                Sign In With Apple
+                Sign in with Apple
+              </button>
+              <button id="signInButtonGoogle" class="signInButton animated fadeInUp">
+                <ion-icon slot="start" size="medium" name="logo-google"></ion-icon>
+                Sign in with Google
+              </button>
+              <button id="signInButtonTwitter" class="signInButton animated fadeInUp">
+                <ion-icon slot="start" size="medium" name="logo-twitter"></ion-icon>
+                Sign in with Twitter
               </button>
             </div>
-            <p>By signing in, you agree to the <a href="https://r0h.in/articles/wow">EULA</a>.</p>
+            <p class="lighttext animated fadeIn">By signing in, you agree to the <a href="https://r0h.in/articles/wow">EULA</a>.</p>
           </div>
         </div>
       </ion-content>
-      
     </div>    
+
+    <div id="app-setup" class="hidden page">
+      <ion-content fullscreen="false" padding="true">
+        <div class="countPlaqueContainer animated pulse slower infinite" >
+          <div class="countPlaque animated zoomIn">
+            <h1 id="CountPlaqueEntryTitle"></h1>
+          </div>
+        </div>
+        <p class="countsubtext animated fadeIn slow delay-1s">(If you sign up now)</p>
+        <br><br>
+        <div class="inputContainerSingle animated fadeInUp">
+          <ion-input class="customInput" label="Username:"></ion-input>
+        </div>
+        <div class="usernametext animated fadeInUp">
+          <ion-icon name="checkmark"></ion-icon>
+          <div>This username is available!</div>
+        </div>
+
+        <br><br>
+        <div class="bottomPart animated fadeInUp">
+          <ion-button class="continueButton">
+            Continue <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+
+      </ion-content>
+    </div>
     
     <div id="app-home" class="hidden ion-page">
       <ion-tabs id="ion-tabs-root">
