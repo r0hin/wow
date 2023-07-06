@@ -68,23 +68,24 @@
             <h1 id="CountPlaqueEntryTitle"></h1>
           </div>
         </div>
-        <p class="countsubtext animated fadeIn slow delay-1s">(If you sign up now)</p>
+        <p class="countsubtext animated fadeIn slow delay-1s">(If you sign-up now)</p>
         <br><br>
-        <div class="inputContainerSingle animated fadeInUp">
-          <ion-input class="customInput" label="Username:"></ion-input>
+        <div class="inputContainer">
+          <div class="inputContainerSingle animated fadeInUp">
+            <ion-input id="usernameInput" label="Username"></ion-input>
+            <ion-icon id="userAvailableYes" class="userAvailableIcon hidden" name="checkmark"></ion-icon>
+            <ion-icon id="userAvailableNo" class="userAvailableIcon hidden" name="close"></ion-icon>
+          </div>
+          <ion-item lines="none" class="animated fadeInUp uploadPhotoButton">
+            <ion-label>Profile photo</ion-label>
+            <ion-button id="setPhotoButton" fill="outline">Set</ion-button>
+          </ion-item>
         </div>
-        <div class="usernametext animated fadeInUp">
-          <ion-icon name="checkmark"></ion-icon>
-          <div>This username is available!</div>
-        </div>
-
-        <br><br>
         <div class="bottomPart animated fadeInUp">
-          <ion-button class="continueButton">
+          <ion-button id="continueButton" disabled>
             Continue <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>
-
       </ion-content>
     </div>
     

@@ -2,6 +2,8 @@ import { getApp, initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { arrayUnion, collection, doc, getCountFromServer, getDoc, getFirestore, query, setDoc, where } from "firebase/firestore"
 import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, reauthenticateWithCredential, GoogleAuthProvider, TwitterAuthProvider } from "@firebase/auth";
+import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { showAlert, showToasty } from "./alerts";
 
@@ -38,6 +40,8 @@ const getFirebaseAuth = (app) => {
 export const app = initializeApp(firebaseConfig);
 export const auth = getFirebaseAuth(app);
 export const db = getFirestore(app);
+export const rtdb = getDatabase(app);
+export const storage = getStorage(app);
 
 window.user = false;
 
@@ -99,7 +103,7 @@ function getToken() {
   })
 }
 
-async function triggerAuthUpdate() {
+export async function triggerAuthUpdate() {
   window.user = auth.currentUser;
   if (user) {
 

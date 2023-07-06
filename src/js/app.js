@@ -1,14 +1,16 @@
 // Use matchMedia to check the user preference
 import { StatusBar, Style } from '@capacitor/status-bar';
 
-import { auth, db } from "./authservice"
+import { auth, db, rtdb, storage, triggerAuthUpdate } from "./authservice"
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, limitToLast, onSnapshot, orderBy, query, setDoc, updateDoc } from "firebase/firestore"
 
 import { showToasty } from './alerts';
-import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { get, ref, set } from 'firebase/database';
+import { ref as storageRef, uploadBytesResumable } from "firebase/storage";
 
 window.activeSnapshotListener = null;
 window.scrollTimeout = null;
+window.usernameTimetout = window.setTimeout(() => {}, 0);
 
 // Add or remove the "dark" class based on if the media query matches
 window.toggleDarkTheme = (shouldAdd) => {
@@ -408,4 +410,108 @@ $(`#settingstabutton`).on("click", () => {
   if (activeTab == "settings") {
     $(`#settings-nav`).get(0).popToRoot();
   }
+});
+
+$(`#setPhotoButton`).on("click", async () => {
+  const a = document.createElement("input");
+  a.type = "file";
+  a.multiple = false;
+  a.accept = "image/*";
+  a.onchange = async () => {
+    console.log(a)
+    const file = a.files[0];
+    console.log(file)
+    if (!file) {
+      return;
+    }
+
+    const path = storageRef(storage, `pfp/${await getAuthDetail("uid")}.jpg`);
+    const uploadTask = uploadBytesResumable(path, file);
+
+    uploadTask.on('state_changed', (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      // Basically set background color of #setPhotoButton to a gradient of progress
+      $(`#setPhotoButton`).css("background", `linear-gradient(90deg, var(--ion-color-primary) ${progress}%, transparent ${progress}%)`);
+      $(`#setPhotoButton`).addClass("progressBar");
+    }, (err) => {}, () => {
+      // Upload complete
+      $(`#setPhotoButton`).removeClass("progressBar");
+      $(`#setPhotoButton`).get(0).setAttribute("style", "");
+      $(`#setPhotoButton`).html(`Update`);
+      showToasty("Profile picture updated successfully.")
+    })
+  };
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+});
+
+
+$(`#usernameInput`).on("input", async () => {
+  const username = $(`#usernameInput`).val();
+  if (username.length < 2) {
+    $(`#userAvailableYes`).addClass("hidden");
+    $(`#userAvailableNo`).removeClass("hidden");
+    $(`#continueButton`).attr("disabled", true);
+    return;
+  }
+
+  if (username.length > 20) {
+    $(`#userAvailableYes`).addClass("hidden");
+    $(`#userAvailableNo`).removeClass("hidden");
+    $(`#continueButton`).attr("disabled", true);
+    return;
+  }
+
+  // Check for special characters
+  if (username.match(/[^a-zA-Z0-9]/g)) {
+    $(`#userAvailableYes`).addClass("hidden");
+    $(`#userAvailableNo`).removeClass("hidden");
+    $(`#continueButton`).attr("disabled", true);
+    return;
+  }
+
+  window.clearTimeout(window.usernameTimetout);
+  usernameTimetout = window.setTimeout(async () => {
+    // Check for availability
+    const snapshot = await get(ref(rtdb, `usernames/${username}`));
+    if (snapshot.exists()) {
+      $(`#userAvailableYes`).addClass("hidden");
+      $(`#userAvailableNo`).removeClass("hidden");
+      $(`#continueButton`).attr("disabled", true);
+      return;
+    }
+
+    $(`#userAvailableYes`).removeClass("hidden");
+    $(`#userAvailableNo`).addClass("hidden");
+    $(`#continueButton`).attr("disabled", false);
+  }, 500); 
+});
+
+$(`#continueButton`).on("click", async () => {
+  // Create profile!
+  $(`#continueButton`).attr("disabled", true);
+
+  const username = $(`#usernameInput`).val();
+  const snapshot = await get(ref(rtdb, `usernames/${username}`));
+  if (snapshot.exists()) {
+    showToasty("Username is already taken.");
+    return;
+  }
+
+  await set(ref(rtdb, `usernames/${username}`), await getAuthDetail("uid"));
+  await set(ref(rtdb, `usernames/${await getAuthDetail("uid")}`), username);
+
+  const count = await getNumberOfUsers();
+
+  await setDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
+    username: username,
+    count: count,
+    date: Date.now(),
+    friends: [],
+    badges: [],
+    setup: true
+  });
+
+  triggerAuthUpdate();
 });
