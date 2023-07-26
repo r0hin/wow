@@ -13,6 +13,7 @@ import { App } from "@capacitor/app";
 import { LocalNotifications } from "@capacitor/local-notifications";
 
 window.scanning = false;
+window.notyIds = [];
 
 const firebaseConfig = {
   apiKey: "AIzaSyC2pUO_tPX2_r6yJjDzyhubx5Tok16L5eg",
@@ -51,15 +52,18 @@ async function setupAuthListeners() {
   console.log("Scheduling")
   FirebaseMessaging.addListener(`notificationReceived`, async (notification) => {
     console.log("Notification received")
+    if (notyIds.includes(notification.notification.data.id)) return;
+    notyIds.push(notification.notification.data.id);
     // Disable notification when app is active
     const state = await App.getState();
     if (!state.isActive) {
+      console.log(notification.notification.data.id)
       await LocalNotifications.schedule({
         notifications: [
           {
             title: notification.notification.data.title,
             body: notification.notification.data.body,
-            id: new Date().getTime(),
+            id: parseInt(notification.notification.data.id),
           }
         ],
       })
@@ -311,6 +315,19 @@ window.addFriend = async (uidInput) => {
   const data = userDoc.data();
   if (data.friends && data.friends.length && data.friends.includes(window.user.uid)) {
     showAlert("User already added", "", "The user you are trying to add is already your friend");
+    return;
+  }
+
+  // Check if friend has blocked user
+  if (data.blocked && data.blocked.length && data.blocked.includes(window.user.uid)) {
+    showAlert("User blocked", "", "The user you are trying to add has blocked you");
+    return;
+  }
+
+  // Check if user has blocked friend
+  const currentUserDoc = await getDoc(doc(db, `users/${window.user.uid}`));
+  if (currentUserDoc.data().blocked && currentUserDoc.data().blocked.length && currentUserDoc.data().blocked.includes(uid)) {
+    showAlert("User blocked", "", "You have blocked this user. To undo this, go to settings.");
     return;
   }
 

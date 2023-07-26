@@ -117,7 +117,7 @@
                         To cancel scanning, select <ion-icon name="scan"></ion-icon> again.
                       </ion-card-content>
                     </ion-card>
-                    <ion-list id="friendList" inset="true"></ion-list>
+                    <ion-list lines="inset" id="friendList" inset="true"></ion-list>
                   </ion-content>
                 `;
 
@@ -192,6 +192,11 @@
                           <ion-label>Profile</ion-label>
                         </ion-item>
                       </ion-nav-link>
+                      <ion-nav-link component="settings-blocked">
+                        <ion-item button>
+                          <ion-label>Blocked</ion-label>
+                        </ion-item>
+                      </ion-nav-link>
                     </ion-list>
                     <ion-list inset="true">
                       <br>
@@ -215,7 +220,7 @@
                         <ion-label>Twitter</ion-label>
                         <ion-icon slot="end" name="logo-twitter"></ion-icon>
                       </ion-item>
-                      <ion-item button id="emailLink">
+                      <ion-item button id="emailLink" lines="none">
                         <ion-label>Email</ion-label>
                         <ion-icon slot="end" name="mail"></ion-icon>
                       </ion-item>
@@ -224,7 +229,9 @@
                     <div style="padding: 16px;">
                       <center>
                         <ion-label>
+                          <p><a href="https://r0h.in/pages/wow">Terms of Service</a></p>
                           <p>Copyright Rohin, Inc. 2023.</p>
+                          <p>in.r0h.wow v1.1</p>
                         </ion-label>
                       </center>
                     </div>
@@ -316,7 +323,7 @@
                       <ion-label>Display</ion-label>
                       <ion-note  id="profileName" slot="end">...</ion-note>
                     </ion-item>
-                    <ion-item>
+                    <ion-item lines="none">
                       <ion-label>Email</ion-label>
                       <ion-note id="profileEmail" slot="end">...</ion-note>
                     </ion-item>
@@ -328,7 +335,7 @@
                     <ion-item button id="profileSignOut">
                       <ion-label color="danger">Sign Out</ion-label>
                     </ion-item>
-                    <ion-item button id="profileDeleteAccount">
+                    <ion-item lines="none" button id="profileDeleteAccount">
                       <ion-label color="danger">Delete Account</ion-label>
                     </ion-item>
                   </ion-list>
@@ -355,9 +362,45 @@
                 });
               }
             }
+
+            class settingsBlocked extends HTMLElement {
+              async connectedCallback() {
+                this.innerHTML = `
+                <style>
+                  .hidden {
+                    display: none !important;
+                  }
+
+                  .blockedUserText {
+                    margin-left: 16px;
+                  }
+                </style>
+                <ion-header translucent="true">
+                  <ion-toolbar>
+                    <ion-buttons slot="start">
+                      <ion-nav-link component="settings-main" routerDirection="back">
+                        <ion-back-button text="Settings"></ion-back-button>
+                      </ion-nav-link>
+                    </ion-buttons>
+                    <ion-title>Blocked</ion-title>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content fullscreen="true">
+                  <br>
+                  <ion-text color="medium" id="noBlockedUsers" class="blockedUserText hidden">No blocked users.</ion-text>
+                  <ion-list lines="none" id="blockedUserList"></ion-list>
+                </ion-content>
+                `;
+
+                defineRefreshBlockedDisplay($(`#blockedUserList`), $(`#noBlockedUsers`))
+
+                refreshBlockedDisplay();
+              }
+            }
             
             customElements.define('settings-main', settingsMain);
             customElements.define('settings-account', settingsAccount);
+            customElements.define('settings-blocked', settingsBlocked);
           </script>
           
           <!-- <settings-account>

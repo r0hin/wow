@@ -26,12 +26,21 @@ exports.notificationHandler = onDocumentCreated("relations/{relationId}/chats/{m
 
   const receiverToken = receiverFcm.data().tokens;
 
-  await messaging.send({
+  // messaging.send({
+  //   token: receiverToken,
+  //   notification: {
+  //     title: `${senderName}`,
+  //     body: `${text}`,
+  //   }
+  // }), 
+
+  await Promise.all(messaging.send({
     "token": receiverToken,
     "data": {
       "title": `${senderName}`,
       "body": `${text}`,
-      "sender": `${sender}`
+      "sender": `${sender}`,
+      "id": new Date().getTime().toString(),
     },
     "apns": {
       "payload": {
@@ -41,7 +50,7 @@ exports.notificationHandler = onDocumentCreated("relations/{relationId}/chats/{m
         }
       }
     }
-  })
+  }))
 });
 
 

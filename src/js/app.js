@@ -9,9 +9,12 @@ import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 window.activeSnapshotListener = null;
 window.scrollTimeout = null;
+window.cacheUser = null;
+window.refreshBlockedDisplay = () => {};
 
 // Add or remove the "dark" class based on if the media query matches
 window.toggleDarkTheme = (shouldAdd) => {
+  console.log('Toggling')
   if (shouldAdd) {
     console.log('adding dark')
     document.body.classList.add('dark');
@@ -38,6 +41,15 @@ window.addEventListener("keyboardWillHide", () => {
 window.friendsCache = [];
 window.lastPaintUID = null;
 window.friendsSnapshotListener = null;
+window.blockedUsers = [];
+
+window.unblockUser = async (uid) => {
+  await updateDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
+    blocked: arrayRemove(uid)
+  }, { merge: true });
+
+  showToasty("User unblocked successfully");
+}
 
 window.loadFriends = async (list, card) => {
   const user = auth.currentUser;
@@ -52,7 +64,42 @@ window.loadFriends = async (list, card) => {
       $(`#home-nav`).get(0).popToRoot();
     }
 
+    cacheUser = selfDoc.data();
+
+    let toRefreshBlocked = false;
     lastPaintUID = selfDoc.id;
+    if (selfDoc.data().blocked && selfDoc.data().blocked.length) {
+      for (let i = 0; i < selfDoc.data().blocked.length; i++) {
+        const blockedUser = selfDoc.data().blocked[i];
+        if (!(blockedUsers || []).some((x) => x.uid == blockedUser)) {
+          let name = "Unknown";
+          const friendDoc = await getDoc(doc(db, `users/${blockedUser}`));
+          if (friendDoc.exists()) {
+            name = friendDoc.data().name;
+          }
+
+          console.log(name)
+
+          blockedUsers.push({
+            uid: blockedUser,
+            name: name
+          });
+          toRefreshBlocked = true;
+        }
+      }
+    };
+
+    const blockedDeletions = blockedUsers.filter(x => !selfDoc.data().blocked.includes(x.uid));
+
+    blockedDeletions.forEach((blockedUser) => {
+      blockedUsers = blockedUsers.filter(x => x.uid !== blockedUser.uid);
+      toRefreshBlocked = true;
+    });
+
+    if (toRefreshBlocked) {
+      console.log("TO REFERESH DISPLAY")
+      refreshBlockedDisplay();
+    }
 
     if (!selfDoc.exists()) {
       card.removeClass("hidden");
@@ -92,7 +139,7 @@ window.loadFriends = async (list, card) => {
       a.classList.add("friend");
       a.id = friend;
       a.innerHTML = `
-        <ion-item button>
+        <ion-item lines="inset" button>
           <ion-label>${friendData.name}</ion-label>
           <ion-badge class="badge hidden" id="${friend}badge" color="primary">!</ion-badge>
         </ion-item>
@@ -232,10 +279,9 @@ window.loadFriends = async (list, card) => {
 
           $(`#infoButton`).on("click", async () => {
             const actionSheet = document.createElement('ion-action-sheet');
-            actionSheet.header = friendData.name;
+            actionSheet.header = `${friendData.name} (${friend})`;
             actionSheet.buttons = [{
               text: 'Remove Friend',
-              role: 'destructive',
               handler: async () => {
                 await setDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
                   friends: arrayRemove(friend),
@@ -248,8 +294,25 @@ window.loadFriends = async (list, card) => {
                 }, { merge: true });
 
                 showToasty("Friend removed successfully");
-              }
+              },
             }, {
+              text: 'Block',
+              role: 'destructive',
+              handler: async () => {
+                await setDoc(doc(db, `users/${await getAuthDetail("uid")}`), {
+                  friends: arrayRemove(friend),
+                  blocked: arrayUnion(friend),
+                  badges: arrayRemove(friend)
+                }, { merge: true });
+
+                await setDoc(doc(db, `users/${friend}`), {
+                  friends: arrayRemove(await getAuthDetail("uid")),
+                  badges: arrayRemove(await getAuthDetail("uid"))
+                }, { merge: true });
+
+                showToasty("Friend blocked successfully");
+              }
+            },{
               text: 'Cancel',
               role: 'cancel',
             }];
@@ -408,3 +471,27 @@ $(`#settingstabutton`).on("click", () => {
     $(`#settings-nav`).get(0).popToRoot();
   }
 });
+
+window.defineRefreshBlockedDisplay = (list, text) => {
+  refreshBlockedDisplay = async () => {
+    console.log(text, list)
+    if (!blockedUsers.length) {
+      $(text).removeClass(`hidden`);
+      $(list).empty();
+      return;
+    }
+
+    $(text).addClass(`hidden`);
+    $(list).empty();
+    blockedUsers.forEach(async (user) => {
+      const a = document.createElement("ion-item");
+      a.innerHTML = `
+        <ion-label>${user.name}</ion-label>
+        <ion-button fill="clear" slot="end" onclick="unblockUser('${user.uid}')">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      `;
+      $(list).get(0).appendChild(a);
+    })
+  }
+}

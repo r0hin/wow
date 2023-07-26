@@ -1,7 +1,8 @@
 .idea/
-node_modules/
+# node_modules/
 .vscode/
 *.map
 .DS_Store
 .sourcemaps
 dist/
+node_modules

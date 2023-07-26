@@ -4,7 +4,7 @@
   "description": "An amazing wow app",
   "main": "index.js",
   "scripts": {
-    "start": "vite",
+    "start": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "ios": "npx cap sync && npx cap copy",
