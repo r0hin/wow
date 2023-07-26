@@ -125,8 +125,16 @@ window.loadFriends = async (list, card) => {
     for (let i = 0; i < additions.length; i++) {
       const friend = additions[i]; 
       const userDoc = await getDoc(doc(db, `users/${friend}`));
-      const friendData = userDoc.data();
-
+      let friendData = userDoc.data();
+      let hashedName = "";
+      const toScramble = localStorage.getItem("hideUsername");
+      if (toScramble && toScramble == "true") {
+        const uid = friend;
+        const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(uid));
+        const hashArray = Array.from(new Uint8Array(hash));
+        hashedName = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8)
+        friendData.name = hashedName;
+      }
       const a = document.createElement("ion-nav-link");
       a.setAttribute("component", `friend-${friend}`);
       a.onclick = async () => {
@@ -294,6 +302,15 @@ window.loadFriends = async (list, card) => {
                 }, { merge: true });
 
                 showToasty("Friend removed successfully");
+              },
+            }, {
+              text: 'Report',
+              handler: async () => {
+                await setDoc(doc(db, `reports/${friend}`), {
+                  reporters: arrayUnion(await getAuthDetail("uid")),
+                }, { merge: true });
+
+                showToasty("Friend reported successfully");
               },
             }, {
               text: 'Block',
@@ -495,3 +512,5 @@ window.defineRefreshBlockedDisplay = (list, text) => {
     })
   }
 }
+
+window.prepare

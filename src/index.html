@@ -200,8 +200,12 @@
                     </ion-list>
                     <ion-list inset="true">
                       <br>
-                      <ion-label class="list-header">Theme</ion-label>
+                      <ion-label class="list-header">Appearance</ion-label>
                       <br><br>
+                      <ion-item>
+                        <ion-label>Scramble Usernames</ion-label>
+                        <ion-toggle id="hideUsernameToggle"></ion-toggle>
+                      </ion-item>
                       <ion-item>
                         <ion-label>Device Appearance</ion-label>
                         <ion-toggle id="deviceAppearanceToggle"></ion-toggle>
@@ -264,6 +268,13 @@
                   }
                 });
 
+                $(`#hideUsernameToggle`).on("ionChange", () => {
+                  // Show alert
+                  const checked = $(`#hideUsernameToggle`).prop("checked");
+                  localStorage.setItem("hideUsername", checked);
+                  alert("This safety feature serves as: A method for filtering objectionable content. \n\nThis feature is fully-activated upon app refresh.")
+                })
+
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
                 prefersDark.addEventListener('change', (mediaQuery) => {
                   if (localStorage.getItem("deviceAppearance") !== "false") {
@@ -299,6 +310,14 @@
 
                 if (appearanceSaved == "false") {
                   toggleDarkTheme(darkSaved == "true");
+                }
+
+                const hideUsernameSaved = localStorage.getItem("hideUsername");
+                if (hideUsernameSaved == "true") {
+                  $(`#hideUsernameToggle`).prop("checked", true);
+                }
+                else {
+                  $(`#hideUsernameToggle`).prop("checked", false);
                 }
               }
             }
