@@ -8,7 +8,8 @@
       "launchShowDuration": 0
     },
     "Keyboard": {
-      "resize": "none"
+      "style": "DARK",
+      "resize": "ionic"
     },
     "FirebaseAuthentication": {
       "skipNativeAuth": false,
