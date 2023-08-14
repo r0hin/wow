@@ -2,7 +2,7 @@
   padding: 16px;
 }
 
-#signInButton {
+.signInButton {
   background-color: var(--ion-item-background);
   color: var(--ion-item-color);
   padding: 16px;
@@ -17,14 +17,15 @@
   align-items: center;
   transition: all 0.2s;
   transform: scale(1);
+  margin-bottom: 12px;
 }
 
-#signInButton:hover {
-  background-color: var(--ion-item-background-hover);
+.signInButton:hover, .signInButton:active {
+  background-color: var(--ion-item-background);
   transform: scale(0.95);
 }
 
-#signInButton > * {
+.signInButton > * {
   padding-right: 12px;
   padding-left: 12px;
 }

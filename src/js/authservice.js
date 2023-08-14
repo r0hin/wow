@@ -112,9 +112,11 @@ async function triggerAuthUpdate() {
     $(`#app-home`).removeClass("hidden");
 
     const response = await FirebaseMessaging.requestPermissions();
+    console.log(response)
     if (response.receive === "granted") {
       const token = await getToken();
       console.log("Updating FCM token!")
+      console.log(user.uid, token)
       await setDoc(doc(db, `fcm/${user.uid}`), {
         tokens: token
       }, { merge: true })
@@ -441,4 +443,36 @@ window.deleteAccount = async () => {
 
   document.body.appendChild(alert);
   await alert.present();
+}
+
+$(`#signInButtonApple`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithApple({
+    skipNativeAuth: true,
+    scopes: ["email"]
+  });
+
+  const provider = new OAuthProvider("apple.com");
+  const credential = provider.credential({
+    idToken: result.credential?.idToken,
+    rawNonce: result.credential?.nonce
+  });
+
+  await signInWithCredential(getFirebaseAuth(), credential);
+}
+
+$(`#signInButtonGoogle`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithGoogle({
+    skipNativeAuth: false,
+  });
+  const credential = GoogleAuthProvider.credential(result.credential.idToken);
+  await signInWithCredential(getFirebaseAuth(), credential);
+}
+
+$(`#signInButtonTwitter`).get(0).onclick = async () => {
+  const result = await FirebaseAuthentication.signInWithTwitter({
+    skipNativeAuth: false,
+  });
+  console.log(result)
+  const credential = TwitterAuthProvider.credential(result.credential?.accessToken, result.credential?.secret);
+  await signInWithCredential(getFirebaseAuth(), credential);
 }
