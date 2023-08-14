@@ -1,6 +1,6 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Wow!",
+  "short_name": "Wow!",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [
@@ -53,5 +53,5 @@
     }
   ],
   "background_color": "#eeeeee",
-  "theme_color": "#31d53d"
+  "theme_color": "#5e5ce6"
 }
