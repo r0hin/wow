@@ -1,6 +1,7 @@
 .loginTitleImage {
-  width: 85px;
-  height: 85px;
+  width: 95px;
+  height: 95px;
+  object-fit: cover;
   border-radius: 24px;
   margin-bottom: 12px;
 }
@@ -26,9 +27,8 @@
 
 .appleLoginButton {
   height: 48px;
-  padding-left: 64px;
   width: 100%;
-  padding-right: 32px;
+  padding-left: 32px;
   border-radius: 12px;
   background-color: var(--ion-color-light);
   color: white;
@@ -39,7 +39,7 @@
 
 .appleLoginButton i {
   position: absolute;
-  left: 32px; top: 50%;
+  left: calc(50% - 82px); top: 50%;
   transform: translateY(-50%);
 }
 
@@ -65,13 +65,16 @@
 
 .loginButton {
   height: 48px;
-  padding-left: 64px;
   width: 100%;
-  padding-right: 32px;
   border-radius: 12px;
   background-color: var(--ion-color-primary);
   color: white;
   font-size: 16px;
   position: relative;
   font-weight: 600;
+}
+
+#emailLoginButton i {
+  font-size: 18px;
+  margin-left: 8px;
 }
