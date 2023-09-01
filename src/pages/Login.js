@@ -39,7 +39,9 @@ class Login extends HTMLElement {
     })
 
     $(`#appleLoginButton`).on("click", appleLoginButton)
-    $(`#emailLoginButton`).on("click", () => emailLoginButton($(`#email`).val(), $(`#password`).val()), $(`#emailLoginButton`))
+    $(`#emailLoginButton`).on("click", () => {
+      emailLoginButton($(`#email`).val(), $(`#password`).val(), $(`#emailLoginButton`))
+    })
   }
 }
 

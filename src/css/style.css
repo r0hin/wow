@@ -119,6 +119,10 @@ button {
   transition: all 0.3s;
 }
 
+button:active {
+  transform: scale(0.95);
+}
+
 button i {
   transform: translateY(2px);
 }
@@ -126,4 +130,5 @@ button i {
 .title {
   font-size: 2rem;
   font-weight: 800;
+  padding-left: 16px;
 }

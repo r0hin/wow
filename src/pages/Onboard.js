@@ -12,7 +12,7 @@ class Onboard extends HTMLElement {
         <br><br>
         <center>
           <button id="profilePhotoButton" class="profileButton">
-            <img id="profilePhoto" class="profileImage" src="https://firebasestorage.googleapis.com/v0/b/social-721e8.appspot.com/o/default.png?alt=media" alt="" />
+            <img id="profilePhoto" class="profileImage" src="https://api.dicebear.com/7.x/bottts/png?seed=${window.user.uid}" alt="" />
             <i class="bx bx-camera"></i>
           </button>
           <br><br><br>

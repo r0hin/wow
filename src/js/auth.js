@@ -1,9 +1,15 @@
 import { getApp, initializeApp } from "firebase/app"
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, signInWithEmailAndPassword } from "@firebase/auth";
-import { refreshLoc } from "../pages/Router";
-import { getFirestore } from "firebase/firestore";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import { getStorage } from "firebase/storage"
+
+import { refreshLoc } from "../pages/Router";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { loadSettings } from "./settings";
+StatusBar.setStyle({
+  style: Style.Dark
+})
 
 const firebaseConfig = {
   apiKey: "AIzaSyC2pUO_tPX2_r6yJjDzyhubx5Tok16L5eg",
@@ -35,7 +41,19 @@ export const storage = getStorage(app);
 
 onAuthStateChanged(auth, (user) => {
   window.user = user;
-  console.log(user)
+  loadSettings();
+
+  // Listener tech
+  if (!window.listenerCreated) {
+    window.listenerCreated = true;
+    try { listener();} catch (error) {}
+    console.log("Creating listener...")
+    window.listener = onSnapshot(doc(db, `users/${user.uid}`), (doc) => {
+      window.cacheUser = doc.data();
+      loadSettings();
+    });
+  }
+
   refreshLoc();
 });
 
@@ -56,7 +74,6 @@ export async function appleLoginButton() {
 
 export async function emailLoginButton(email, password, button) {
   button.addClass("disabled"); // Even if errors, dont re enable. Will be re-enabled on input
-
   let signInResult;
   try {
     signInResult = await FirebaseAuthentication.signInWithEmailAndPassword({
