@@ -23,6 +23,9 @@ class Home extends HTMLElement {
             </ion-item>
           </ion-list>
 
+          <ion-list inset="true" id="friendsList">
+          </ion-list>
+
         </div>
         <div index="1" class="tab">
           <h1 class="title">Add</h1>
@@ -57,9 +60,7 @@ class Home extends HTMLElement {
 
         <nav-bar class="navBar" />
       </ion-content>
-    `    
-
-    loadSettings();
+    `;
 
     $(`#signOutButton`).on('click', async () => {
       await Promise.all([

@@ -7,7 +7,7 @@ import { showToasty } from "../js/alerts";
 class AddFriend extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <ion-modal id="addFriendModal" trigger="open-modal" swipe-to-close="true">
+      <ion-modal id="addFriendModal" swipe-to-close="true">
         <ion-content class="ion-padding">
           <ion-searchbar id="friendSearch" debounce="1000" placeholder="Search Username"></ion-searchbar>
 

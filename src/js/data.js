@@ -13,17 +13,46 @@ export function loadData(oldData, newData) {
   if (current == "/requests") { // Live update only if on the requests page
     let incomingRequests = newData.incomingRequests
     if (oldData.incomingRequests && (oldData.incomingRequests.length == newData.incomingRequests.length)) {
-      incomingRequests = [];
+      incomingRequests = false;
     }
     loadIncomingRequests(incomingRequests);
   }
 
+  if (current == "/home") {
+    let friends = newData.friends;
+    if (oldData.friends && (oldData.friends.length == newData.friends.length)) {
+      friends = false;
+    }
+    loadFriends(friends);
+  }
+}
 
+function loadFriends(data) {
+  if (!data) return; // An empty array is still truthy
+
+  console.log("Clearing")
+  $(`#friendsList`).empty();
+
+  for (let i = 0; i < data.length; i++) {
+    const friend = data[i];
+
+    const a = document.createElement("ion-item");
+    a.setAttribute("button", "true");
+    a.classList.add("friendItem");
+    a.id = `friend${friend.uid}`;
+    a.innerHTML = `
+      <ion-avatar class="friendItemAvatar" slot="start">
+        <profile-photo uid="${friend.uid}"></profile-photo>
+      </ion-avatar>
+      <ion-label>${friend.username}</ion-label>
+    `
+    $(`#friendsList`).get(0).appendChild(a);
+  }
 }
 
 export function loadIncomingRequests(data) {
-  console.log("Reloading incoming")
-  // Empty all requestsList children without .listItemOut
+  if (!data) return;
+
   $(`#requestsList`).children(`:not(.listItemOut)`).remove();
 
   for (let i = 0; i < data.length; i++) {
