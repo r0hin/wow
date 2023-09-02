@@ -1,5 +1,8 @@
-import { db } from "../js/auth";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "../js/auth";
 import { getDoc, doc } from "firebase/firestore";
+import {  Keyboard} from "@capacitor/keyboard"
+import { showToasty } from "../js/alerts";
 
 class AddFriend extends HTMLElement {
   connectedCallback() {
@@ -21,7 +24,7 @@ class AddFriend extends HTMLElement {
               </ion-card-header>
               <ion-card-content id="cardBody"></ion-card-content>
             </ion-card>
-            <button class="blockButton sendRequestButton">
+            <button id="sendButton" class="blockButton sendRequestButton">
               Send Request
               <i class="bx bx-right-arrow-alt"></i>  
             </button>
@@ -36,6 +39,9 @@ class AddFriend extends HTMLElement {
     modal.breakpoints = [0, 0.25, 0.75];
 
     $(`#friendSearch`).on("ionChange", async (ev) => {
+      // Hide keyboard
+      await Keyboard.hide();
+
       const username = $(ev.target).val().toLowerCase();
       const usernameMap = await getDoc(doc(db, `usernames/${username}`));
 
@@ -58,6 +64,35 @@ class AddFriend extends HTMLElement {
       modal.setCurrentBreakpoint(0.75);
     });
 
+    $(`#sendButton`).on("click", async () => {
+      $(`#sendButton`).addClass("disabled");
+
+      const usernameDoc = await getDoc(doc(db, `usernames/${$(`#friendSearch`).val().toLowerCase()}`));
+      if (!usernameDoc.exists()) {
+        alert("User does not exist");
+        return;
+      }
+
+      const uid = usernameDoc.data().uid;
+      const sendRequest = httpsCallable(functions, "friends-sendRequest");
+      const response = await sendRequest({
+        target: uid
+      })
+
+      if (!response.data.success) {
+        alert(response.data.message);
+        $(`#sendButton`).removeClass("disabled");
+        return;
+      }
+
+      $(`#noSearchResult`).addClass("hidden");
+      $(`#searchResult`).addClass("hidden");
+      $(`#friendSearch`).val("")
+      $(`#sendButton`).removeClass("disabled");
+      modal.dismiss();
+
+      showToasty("Friend request sent!")
+    });
   }
 }
 

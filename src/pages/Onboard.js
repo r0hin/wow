@@ -1,7 +1,8 @@
-import { storage } from "../js/auth";
+import { functions, storage } from "../js/auth";
 import { ref, uploadBytes } from "firebase/storage";
 import { db } from "../js/auth";
 import { setDoc, doc, getDoc } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 
 class Onboard extends HTMLElement {
   connectedCallback() {
@@ -73,20 +74,17 @@ class Onboard extends HTMLElement {
 
       const usernameDoc = await getDoc(doc(db, `usernames/${username}`));
       if (usernameDoc.exists()) {
-        alert("Username taken");
+        alert("This username is already taken.");
         return;
       }
 
-      await setDoc(doc(db, `usernames/${username}`), {
-        uid: window.user.uid,
-        created: new Date().getTime(),
-      });
-
-      await setDoc(doc(db, `users/${window.user.uid}`), {
-        username: username,
-        created: new Date().getTime(),
-      });
-
+      const createAccount = httpsCallable(functions, 'general-createAccount');
+      const result = await createAccount({ username: username });
+      if (!result.data.success) {
+        alert("Error creating account");
+        return;
+      }
+      
       const routerElement = $(`#router`).get(0);
       routerElement.push("/home")
 

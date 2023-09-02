@@ -4,7 +4,7 @@ class ProfilePhoto extends HTMLElement {
 
     this.innerHTML = `
       <div class="pfpContainer">
-        <img id="${photoID}" class="pfp" src="./assets/imgs/pfp.png" alt="" />
+        <img id="${photoID}" class="pfp" alt="" />
       </div>
     `
 

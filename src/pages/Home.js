@@ -7,6 +7,7 @@ import { loadSettings } from "../js/settings";
 class Home extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
+      
       <ion-content id="homeContainer" class="ion-padding">
         <br><br>
         <div index="0" class="tab active">
@@ -14,6 +15,14 @@ class Home extends HTMLElement {
             <h1 class="title">Messages</h1>
           </div>
           <add-friend></add-friend>
+
+          <ion-list inset="true">
+            <ion-item id="toRequestsButton" button>
+              <ion-label>Incoming Requests</ion-label>
+              <ion-note id="incomingRequests">0</ion-note>
+            </ion-item>
+          </ion-list>
+
         </div>
         <div index="1" class="tab">
           <h1 class="title">Add</h1>
@@ -34,6 +43,16 @@ class Home extends HTMLElement {
               <ion-label>Sign Out</ion-label>
             </ion-item>
           </ion-list>
+
+          <p class="subtitle">People</p>
+          <ion-list inset="true">
+            <ion-item button>
+              <ion-label>Outgoing Requests</ion-label>
+            </ion-item>
+            <ion-item button>
+              <ion-label>Blocked Users</ion-label>
+            </ion-item>
+          </ion-list>
         </div>
 
         <nav-bar class="navBar" />
@@ -49,6 +68,11 @@ class Home extends HTMLElement {
       ]);
 
       alert("Signed out!")
+    });
+
+    $(`#toRequestsButton`).on('click', () => {
+      const routerElement = $(`#router`).get(0);
+      routerElement.push("/requests");
     });
   }
 }

@@ -3,10 +3,12 @@ import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { getAuth, initializeAuth, indexedDBLocalPersistence, signInWithCredential, OAuthProvider, onAuthStateChanged, signInWithEmailAndPassword } from "@firebase/auth";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import { getStorage } from "firebase/storage"
+import { getFunctions } from "firebase/functions"
 
 import { refreshLoc } from "../pages/Router";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { loadSettings } from "./settings";
+import { loadData } from "./data";
 StatusBar.setStyle({
   style: Style.Dark
 })
@@ -38,17 +40,23 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getFirebaseAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const functions = getFunctions(app);
 
 onAuthStateChanged(auth, (user) => {
   window.user = user;
-  loadSettings();
+
+  if (user) {
+    loadSettings();
+    loadData({}, window.cacheUser) // Load data from cache, if it exists
+  }
 
   // Listener tech
-  if (!window.listenerCreated) {
+  if (!window.listenerCreated && user) {
     window.listenerCreated = true;
     try { listener();} catch (error) {}
     console.log("Creating listener...")
     window.listener = onSnapshot(doc(db, `users/${user.uid}`), (doc) => {
+      loadData(window.cacheUser || {}, doc.data())
       window.cacheUser = doc.data();
       loadSettings();
     });

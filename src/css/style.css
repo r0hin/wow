@@ -112,11 +112,11 @@
 
 ion-app {
   height: 100%;
-  transition: all 0.3s !important;
+  transition: all 0.2s !important;
 }
 
 button {
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
 button:active {

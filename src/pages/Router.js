@@ -26,7 +26,6 @@ export async function refreshLoc() {
   if (user) {
     const userDoc = await getDoc(doc(db, `users/${user.uid}`));
     if (userDoc.exists()) {
-      console.log("going home")
       routerElement.push("/home")
     }
     else {
