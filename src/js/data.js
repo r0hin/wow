@@ -1,6 +1,7 @@
 import { httpsCallable } from "firebase/functions";
 import { functions } from "./auth";
 import { showToasty } from "./alerts";
+import { openChat } from "./chats";
 
 export function loadData(oldData, newData) {
   // Basically, load the difference between the two objects
@@ -45,7 +46,13 @@ function loadFriends(data) {
         <profile-photo uid="${friend.uid}"></profile-photo>
       </ion-avatar>
       <ion-label>${friend.username}</ion-label>
-    `
+    `;
+
+    a.onclick = () => {
+      openChat(friend.uid);
+    }
+
+
     $(`#friendsList`).get(0).appendChild(a);
   }
 }

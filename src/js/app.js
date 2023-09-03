@@ -4,7 +4,7 @@ import { loadSettings } from "./settings";
 window.current = "/";
 
 const pages = ["Login.js", "Router.js", "Onboard.js", "Home.js", "Requests.js"];
-const components = ["NavBar.js", "AddFriend.js", "ProfilePhoto.js"]
+const components = ["NavBar.js", "AddFriend.js", "ProfilePhoto.js", "ChatView.js"]
 
 if (!$(`#scriptsContainer`).children().length) {
   pages.forEach(page=>{const a=document.createElement("script");a.type="module",a.src=`./pages/${page}`,$(`#scriptsContainer`).get(0).appendChild(a)});

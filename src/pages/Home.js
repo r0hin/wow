@@ -10,11 +10,12 @@ class Home extends HTMLElement {
       
       <ion-content id="homeContainer" class="ion-padding">
         <br><br>
-        <div index="0" class="tab active">
+        <div id="messagesTab" index="0" class="tab active">
           <div class="header">
             <h1 class="title">Messages</h1>
           </div>
           <add-friend></add-friend>
+          <chat-view></chat-view>
 
           <ion-list inset="true">
             <ion-item id="toRequestsButton" button>
@@ -23,8 +24,7 @@ class Home extends HTMLElement {
             </ion-item>
           </ion-list>
 
-          <ion-list inset="true" id="friendsList">
-          </ion-list>
+          <ion-list inset="true" id="friendsList"></ion-list>
 
         </div>
         <div index="1" class="tab">

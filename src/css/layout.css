@@ -95,13 +95,43 @@
   transition-timing-function: ease-in-out;
 }
 
+.endBounceBottom #chatViewContainer {
+  transform: translateY(-97%) translateX(0%);
+  transition-timing-function: ease-in-out;
+}
+
+.endBounceTop {
+  transform: translateY(-3%) translateX(0%);
+  transition-timing-function: ease-in-out;
+}
+
 .tabEndBounceLeft {
-  transform: translateX(3%);
+  transform: translateX(5%);
+  transition-timing-function: ease-in-out;
+}
+
+.tabEndBounceLeft.chatOpen {
+  transform: translateX(5%) translateY(100%);
+  transition-timing-function: ease-in-out;
+}
+
+.tabEndBounceLeft #chatViewContainer {
+  transform: translateX(5%) translateY(-100%);
   transition-timing-function: ease-in-out;
 }
 
 .tabEndBounceRight {
-  transform: translateX(-3%);
+  transform: translateX(-5%);
+  transition-timing-function: ease-in-out;
+}
+
+.tabEndBounceRight.chatOpen {
+  transform: translateX(-5%) translateY(100%);
+  transition-timing-function: ease-in-out;
+}
+
+.tabEndBounceRight #chatViewContainer {
+  transform: translateX(-5%) translateY(-100%);
   transition-timing-function: ease-in-out;
 }
 
@@ -109,20 +139,70 @@
   display: block;
 }
 
-.startPositionLeft {
+.tab.startPositionLeft {
   transform: translateX(-100%);
   transition: all 0s;
 }
 
-.startPositionRight {
+.tab.startPositionLeft.chatOpen {
+  transform: translateX(-100%) translateY(100%);
+  transition: all 0s;
+}
+
+.tab.startPositionLeft #chatViewContainer {
+  transform: translateX(-100%) translateY(-100%);
+  transition: all 0s;
+}
+
+.tab.startPositionRight {
   transform: translateX(100%);
   transition: all 0s;
 }
 
-.endPositionLeft {
+.tab.startPositionRight.chatOpen {
+  transform: translateX(100%) translateY(100%);
+  transition: all 0s;
+}
+
+.tab.startPositionRight #chatViewContainer {
+  transform: translateX(100%) translateY(-100%);
+  transition: all 0s;
+}
+
+.tab.endPositionLeft {
   transform: translateX(-100%);
 }
 
-.endPositionRight {
+.tab.endPositionLeft.chatOpen {
+  transform: translateX(-100%) translateY(100%);
+}
+
+.tab.endPositionLeft #chatViewContainer {
+  /* transform: translateX(-100%) translateY(-100%); */
+}
+
+.tab.endPositionRight {
   transform: translateX(100%);
+}
+
+.tab.endPositionRight.chatOpen {
+  transform: translateX(100%) translateY(100%);
+}
+
+.tab.endPositionRight #chatViewContainer {
+  /* transform: translateX(100%) translateY(-100%); */
+}
+
+.tab.chatOpen {
+  transform: translateX(0%) translateY(100%);
+  transition: all 0.2s ease-in-out;
+}
+
+#chatViewContainer {
+  position: absolute;
+  bottom: 0px; left: 0px;
+  width: 100%; height: 100%;
+  transition: all 0.2s;
+  transition-timing-function: ease-in-out;
+  transform: translateX(0) translateY(-100%);
 }

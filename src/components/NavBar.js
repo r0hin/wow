@@ -1,4 +1,5 @@
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { exitChat } from '../js/chats';
 
 class NavBar extends HTMLElement {
   connectedCallback() {
@@ -15,6 +16,12 @@ class NavBar extends HTMLElement {
       const index = parseInt(button.attr("index"));
       const tab = $(`.tab`).eq(index);
       
+      if (index == 0) {
+        if (tab.hasClass("active")) {
+          exitChat();
+        }
+      }
+
       if (index == 1) {
         // Open modal instead of tab
         Haptics.impact({ style: ImpactStyle.Medium });
