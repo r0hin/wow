@@ -49,7 +49,7 @@ function loadFriends(data) {
     `;
 
     a.onclick = () => {
-      openChat(friend.uid);
+      openChat(friend.uid, friend.username);
     }
 
 

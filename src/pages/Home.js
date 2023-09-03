@@ -11,21 +11,22 @@ class Home extends HTMLElement {
       <ion-content id="homeContainer" class="ion-padding">
         <br><br>
         <div id="messagesTab" index="0" class="tab active">
-          <div class="header">
-            <h1 class="title">Messages</h1>
-          </div>
-          <add-friend></add-friend>
           <chat-view></chat-view>
+          <div class="bottomSec">
+            <div class="header">
+              <h1 class="title">Messages</h1>
+            </div>
+            <add-friend></add-friend>
 
-          <ion-list inset="true">
-            <ion-item id="toRequestsButton" button>
-              <ion-label>Incoming Requests</ion-label>
-              <ion-note id="incomingRequests">0</ion-note>
-            </ion-item>
-          </ion-list>
+            <ion-list inset="true">
+              <ion-item id="toRequestsButton" button>
+                <ion-label>Incoming Requests</ion-label>
+                <ion-note id="incomingRequests">0</ion-note>
+              </ion-item>
+            </ion-list>
 
-          <ion-list inset="true" id="friendsList"></ion-list>
-
+            <ion-list inset="true" id="friendsList"></ion-list>
+          </div>
         </div>
         <div index="1" class="tab">
           <h1 class="title">Add</h1>
