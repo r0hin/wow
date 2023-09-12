@@ -9,6 +9,7 @@ import { refreshLoc } from "../pages/Router";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { loadSettings } from "./settings";
 import { loadData } from "./data";
+import { getDatabase } from "firebase/database";
 StatusBar.setStyle({
   style: Style.Dark
 })

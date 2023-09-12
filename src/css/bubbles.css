@@ -1,0 +1,96 @@
+#messageCanvas { 
+  --sentColor: #0b93f6;
+  --receiveColor: var(--ion-color-step-100);
+  --bg: var(--ion-color-step-50);
+  overflow: hidden;
+  position: relative;
+}
+
+.bubbleContainer {
+  position: absolute;
+}
+
+@keyframes slideIn {
+  0% {
+    bottom: -100px;
+  }
+  100% {
+    bottom: 100px;
+  }
+}
+
+.bubble {
+  position: relative; /* Setup a relative container for our psuedo elements */
+  max-width: 255px;
+  margin-bottom: 15px;
+  width: min-content;
+  padding: 10px 20px;
+  line-height: 24px;
+  word-wrap: break-word; /* Make sure the text wraps to multiple lines if long */
+  border-radius: 25px;
+}
+
+.bubble p {
+  margin: 0px;
+  display: inline-block;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+.bubble:before {
+  width: 20px;
+}
+
+.bubble:after {
+  width: 26px;
+  background-color: var(--bg); /* All tails have the same bg cutout */
+}
+
+.bubble:before, .bubble:after {
+  position: absolute;
+  bottom: 0;
+  height: 25px; /* height of our bubble "tail" - should match the border-radius above */
+  content: '';
+}
+
+.outgoing {
+  align-self: flex-end;
+  color: white;
+  background: var(--sentColor);
+}
+
+.outgoing:before {
+  right: -7px;
+  background-color: var(--sentColor);
+  border-bottom-left-radius: 16px 14px;
+}
+
+.outgoing:after {
+  right: -26px;
+  border-bottom-left-radius: 10px;
+}
+
+.incoming {
+  align-self: flex-start;
+  color: var(--ion-text-color);
+  background: var(--receiveColor);
+}
+
+.incoming:before {
+  left: -7px;
+  background-color: var(--receiveColor);
+  border-bottom-right-radius: 16px 14px;
+}
+
+.incoming:after {
+  left: -26px;
+  border-bottom-right-radius: 10px;
+}
+
+.noTail {
+  margin-bottom: 2px;
+}
+
+.noTail:before, noTail:after {
+  opacity: 0;
+}

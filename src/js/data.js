@@ -52,7 +52,6 @@ function loadFriends(data) {
       openChat(friend.uid, friend.username);
     }
 
-
     $(`#friendsList`).get(0).appendChild(a);
   }
 }

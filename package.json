@@ -28,6 +28,7 @@
     "@capacitor/splash-screen": "latest",
     "@capacitor/status-bar": "^5.0.5",
     "@ionic/core": "^7.1.1",
+    "animejs": "^3.2.1",
     "firebase": "^9.23.0",
     "qrcode": "^1.5.3"
   },
