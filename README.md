@@ -1,2 +1,2 @@
 # Wow!
- COMING SOON
+SOON
